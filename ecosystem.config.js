@@ -3,7 +3,7 @@ module.exports = {
     {
       script: 'bundle/index.js',
       watch: 'bundle',
-      instances: 'max',
+      instances: '6',
       exec_mode: 'cluster',
       error_file: '/app/logs/error.log',
       out_file: '/app/logs/access.log',

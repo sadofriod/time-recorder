@@ -37,7 +37,25 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require("fs");
+var constant_1 = require("./constant");
+var delayQueuePromise = function (fn, delay, len) {
+    if (len === 0) {
+        return Promise.resolve();
+    }
+    else {
+        return new Promise(function (res, rej) {
+            setTimeout(function () {
+                fn.then(function () {
+                    res(delayQueuePromise(fn, delay, len--));
+                }).catch(function (err) {
+                    rej(err);
+                });
+            }, delay);
+        });
+    }
+};
 var getUserMedia = function (page, second, date) { return __awaiter(void 0, void 0, void 0, function () {
+    var queueItem;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -46,7 +64,7 @@ var getUserMedia = function (page, second, date) { return __awaiter(void 0, void
                         console.log('will save file');
                         return new Promise(function (resolve, reject) {
                             try {
-                                fs.writeFileSync('/app' + "/tempAsset/" + date + "/test.webm", Buffer.from(vedioSteam.split(';base64,').pop(), 'base64')
+                                fs.writeFileSync(constant_1.BASE_PATH + "/" + date + "/test.webm", Buffer.from(vedioSteam.split(';base64,').pop(), 'base64')
                                 // vedioSteam,
                                 );
                                 console.log('save done');
@@ -62,67 +80,77 @@ var getUserMedia = function (page, second, date) { return __awaiter(void 0, void
             case 1:
                 _a.sent();
                 console.log('trigger getUserMedia');
-                return [4 /*yield*/, page.evaluate(function (second) {
-                        // use window.readfile to read contents of a file
-                        // const content = await window.recorderVedio('/etc/hosts');
-                        // console.log(content);
-                        console.log('trigger evaluate');
-                        var displayCap = {
-                            video: {
-                                cursor: 'always',
-                            },
-                            audio: false,
-                        };
-                        var newWindow = window;
-                        var title = document.querySelector('title');
-                        if (title) {
-                            title.innerHTML = 'recorder-page';
-                        }
-                        // console.log(navigator);
-                        console.log(second);
-                        // navigator.mediaDevices.enumerateDevices().then((data) => {
-                        //   console.log(data);
-                        // });
-                        navigator.mediaDevices
-                            .getDisplayMedia(displayCap)
-                            .then(function (data) {
-                            // console.log(data);
-                            var mediaRecorder = new MediaRecorder(data, {
-                                mimeType: 'video/webm',
-                                audioBitsPerSecond: 128000,
-                                videoBitsPerSecond: 2500000,
-                            });
-                            var showDate = new Date();
-                            console.log('start time: ' + showDate.getMinutes() + ':' + showDate.getSeconds());
-                            mediaRecorder.start();
-                            // data.dispatchEvent("")
-                            var timer = setTimeout(function () {
-                                console.log('trigger recorder soon stop');
-                                mediaRecorder.stop();
-                                clearTimeout(timer);
-                            }, second);
-                            console.log(timer);
-                            mediaRecorder.ondataavailable = function (event) {
-                                console.log('trigger recorder end', event.data);
-                                var reader = new window.FileReader();
-                                reader.readAsDataURL(event.data);
-                                reader.onloadend = function () {
-                                    console.log(typeof newWindow.recorderVedio);
-                                    newWindow.recorderVedio &&
-                                        newWindow.recorderVedio(reader.result).then(function (data) {
-                                            console.log('end time: ' + showDate.getMinutes() + ':' + showDate.getSeconds());
-                                            newWindow._autoScroderIsDone = data;
+                queueItem = function () { return __awaiter(void 0, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, page.evaluate(function () {
+                                    console.log('trigger evaluate');
+                                    var displayCap = {
+                                        video: {
+                                            cursor: 'always',
+                                        },
+                                        audio: false,
+                                    };
+                                    var newWindow = window;
+                                    var title = document.querySelector('title');
+                                    if (title) {
+                                        title.innerHTML = 'recorder-page';
+                                    }
+                                    // console.log(second);
+                                    navigator.mediaDevices
+                                        .getDisplayMedia(displayCap)
+                                        .then(function (data) {
+                                        // console.log(data);
+                                        var mediaRecorder = new MediaRecorder(data, {
+                                            mimeType: 'video/webm',
+                                            audioBitsPerSecond: 128000,
+                                            videoBitsPerSecond: 2500000,
                                         });
-                                };
-                            };
-                        })
-                            .catch(function (err) {
-                            console.error('Error:' + err);
-                            return null;
-                        });
-                    }, second)];
-            case 2:
-                _a.sent();
+                                        var showDate = new Date();
+                                        console.log('start time: ' + showDate.getMinutes() + ':' + showDate.getSeconds());
+                                        newWindow.mediaRecorder = mediaRecorder;
+                                        mediaRecorder.start();
+                                    })
+                                        .catch(function (err) {
+                                        console.error('Error:' + err);
+                                        return null;
+                                    });
+                                })];
+                            case 1: return [2 /*return*/, _a.sent()];
+                        }
+                    });
+                }); };
+                delayQueuePromise(queueItem(), 1000, 10);
+                setTimeout(function () { return __awaiter(void 0, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, page.evaluate(function () {
+                                    var newWindow = window;
+                                    var mediaRecorder = newWindow.mediaRecorder;
+                                    if (mediaRecorder) {
+                                        var showDate_1 = new Date();
+                                        mediaRecorder.stop();
+                                        mediaRecorder.ondataavailable = function (event) {
+                                            console.log('trigger recorder end', event.data);
+                                            var reader = new window.FileReader();
+                                            reader.readAsDataURL(event.data);
+                                            reader.onloadend = function () {
+                                                console.log(typeof newWindow.recorderVedio);
+                                                newWindow.recorderVedio &&
+                                                    newWindow.recorderVedio(reader.result).then(function (data) {
+                                                        console.log('end time: ' + showDate_1.getMinutes() + ':' + showDate_1.getSeconds());
+                                                        newWindow._autoScroderIsDone = data;
+                                                    });
+                                            };
+                                        };
+                                    }
+                                })];
+                            case 1:
+                                _a.sent();
+                                return [2 /*return*/];
+                        }
+                    });
+                }); }, second);
                 return [2 /*return*/];
         }
     });

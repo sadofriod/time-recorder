@@ -7,14 +7,15 @@ export const COMMAND = '';
 
 export const IMAGE_TEMP_DIR = '/Users/ashes/Desktop/back-end/jdv-listener/tempAsset/';
 
-export const BASE_PATH = '/app/tempAsset/';
+// export const BASE_PATH = '/app/tempAsset/';
+export const BASE_PATH = 'D:/back-end/jdvlistener/tempAsset';
 
-export const JS_ERROR_LOG_PATH = (date: number | string) => `/app/tempAsset/${date}/js_error.log`;
+export const JS_ERROR_LOG_PATH = (date: number | string) => `${BASE_PATH}/${date}/js_error.log`;
 
-export const JS_LOG_PATH = (date: number | string) => `/app/tempAsset/${date}/js_access.log`;
+export const JS_LOG_PATH = (date: number | string) => `${BASE_PATH}/${date}/js_access.log`;
 
-export const NETWORK_ERROR_LOG_PATH = (date: number | string) => `/app/tempAsset/${date}/network_error.log`;
+export const NETWORK_ERROR_LOG_PATH = (date: number | string) => `${BASE_PATH}/${date}/network_error.log`;
 
-export const NETWORK_LOG_PATH = (date: number | string) => `/app/tempAsset/${date}/network_access.log`;
+export const NETWORK_LOG_PATH = (date: number | string) => `${BASE_PATH}/${date}/network_access.log`;
 
-export const RESPONSE_LOG_PATH = (date: number | string) => `/app/tempAsset/${date}/network_response.log`;
+export const RESPONSE_LOG_PATH = (date: number | string) => `${BASE_PATH}/${date}/network_response.log`;
