@@ -32,6 +32,15 @@ interface Options extends Omit<ImageOption, 'url'> {
   url: string;
 }
 
+const loop = async (pages: any[]): Promise<any> => {
+  if (pages.length > 0) {
+    return Promise.resolve();
+  } else {
+    await getUserMedia(pages[0].page, 60, pages[0].date);
+    return loop(pages.slice(1));
+  }
+};
+
 export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, job: CronJob) => {
   console.log(options);
 
@@ -73,19 +82,20 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
     // await page._client.send('Emulation.clearDeviceMetricsOverride');
     // console.log(pages.length);
     const pages = [
-      await browser.newPage(),
-      await browser.newPage(),
-      await browser.newPage(),
-      await browser.newPage(),
-      await browser.newPage(),
-      await browser.newPage(),
-      await browser.newPage(),
-      await browser.newPage(),
-      await browser.newPage(),
-      await browser.newPage(),
+      { page: await browser.newPage(), date: uuid.v4() },
+      { page: await browser.newPage(), date: uuid.v4() },
+      { page: await browser.newPage(), date: uuid.v4() },
+      { page: await browser.newPage(), date: uuid.v4() },
+      { page: await browser.newPage(), date: uuid.v4() },
+      { page: await browser.newPage(), date: uuid.v4() },
+      { page: await browser.newPage(), date: uuid.v4() },
+      { page: await browser.newPage(), date: uuid.v4() },
+      { page: await browser.newPage(), date: uuid.v4() },
+      { page: await browser.newPage(), date: uuid.v4() },
     ];
-    pages.forEach(async (page, index) => {
-      const date = uuid.v4();
+    pages.forEach(async (item, index) => {
+      // const date = uuid.v4();
+      const { date, page } = item;
       await page.setDefaultNavigationTimeout(0);
       await page.setCookie(...converntCookie(cookies));
       await page.setViewport({
@@ -173,7 +183,7 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
         await browser.close();
       }
     });
-
+    loop(pages);
     // xvfb.stopSync();
   } catch (error) {
     console.log(error);
