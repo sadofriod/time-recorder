@@ -38,24 +38,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require("fs");
 var constant_1 = require("./constant");
-var delayQueuePromise = function (fn, delay, len) {
-    if (len === 0) {
-        return Promise.resolve();
-    }
-    else {
-        return new Promise(function (res, rej) {
-            setTimeout(function () {
-                fn.then(function () {
-                    res(delayQueuePromise(fn, delay, len--));
-                }).catch(function (err) {
-                    rej(err);
-                });
-            }, delay);
-        });
-    }
-};
+// const delayQueuePromise = (fn: Promise<any>, delay: number, len: number) => {
+//   if (len === 0) {
+//     return Promise.resolve();
+//   } else {
+//     return new Promise((res, rej) => {
+//       setTimeout(() => {
+//         fn.then(() => {
+//           res(delayQueuePromise(fn, delay, len--));
+//         }).catch((err) => {
+//           rej(err);
+//         });
+//       }, delay);
+//     });
+//   }
+// };
 var getUserMedia = function (page, second, date) { return __awaiter(void 0, void 0, void 0, function () {
-    var queueItem;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -80,47 +78,7 @@ var getUserMedia = function (page, second, date) { return __awaiter(void 0, void
             case 1:
                 _a.sent();
                 console.log('trigger getUserMedia');
-                queueItem = function () { return __awaiter(void 0, void 0, void 0, function () {
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0: return [4 /*yield*/, page.evaluate(function () {
-                                    console.log('trigger evaluate');
-                                    var displayCap = {
-                                        video: {
-                                            cursor: 'always',
-                                        },
-                                        audio: false,
-                                    };
-                                    var newWindow = window;
-                                    var title = document.querySelector('title');
-                                    if (title) {
-                                        title.innerHTML = 'recorder-page';
-                                    }
-                                    // console.log(second);
-                                    navigator.mediaDevices
-                                        .getDisplayMedia(displayCap)
-                                        .then(function (data) {
-                                        // console.log(data);
-                                        var mediaRecorder = new MediaRecorder(data, {
-                                            mimeType: 'video/webm',
-                                            audioBitsPerSecond: 128000,
-                                            videoBitsPerSecond: 2500000,
-                                        });
-                                        var showDate = new Date();
-                                        console.log('start time: ' + showDate.getMinutes() + ':' + showDate.getSeconds());
-                                        newWindow.mediaRecorder = mediaRecorder;
-                                        mediaRecorder.start();
-                                    })
-                                        .catch(function (err) {
-                                        console.error('Error:' + err);
-                                        return null;
-                                    });
-                                })];
-                            case 1: return [2 /*return*/, _a.sent()];
-                        }
-                    });
-                }); };
-                delayQueuePromise(queueItem(), 1000, 10);
+                // delayQueuePromise(queueItem(), 1000, 10);
                 setTimeout(function () { return __awaiter(void 0, void 0, void 0, function () {
                     return __generator(this, function (_a) {
                         switch (_a.label) {
@@ -151,7 +109,56 @@ var getUserMedia = function (page, second, date) { return __awaiter(void 0, void
                         }
                     });
                 }); }, second);
-                return [2 /*return*/];
+                return [4 /*yield*/, page.waitForSelector('body')];
+            case 2:
+                _a.sent();
+                return [4 /*yield*/, page.click('body')];
+            case 3:
+                _a.sent();
+                return [4 /*yield*/, page.evaluate(function () {
+                        console.log('trigger evaluate');
+                        var displayCap = {
+                            video: {
+                                cursor: 'always',
+                            },
+                            audio: false,
+                        };
+                        var newWindow = window;
+                        var title = document.querySelector('title');
+                        if (title) {
+                            console.log(title);
+                            title.innerHTML = 'recorder-page';
+                        }
+                        newWindow.navigator.mediaDevices
+                            .getDisplayMedia(displayCap)
+                            .then(function (data) {
+                            // console.log(data);
+                            var mediaRecorder = new MediaRecorder(data, {
+                                mimeType: 'video/webm',
+                                audioBitsPerSecond: 128000,
+                                videoBitsPerSecond: 2500000,
+                            });
+                            var showDate = new Date();
+                            console.log('start time: ' + showDate.getMinutes() + ':' + showDate.getSeconds());
+                            newWindow.mediaRecorder = mediaRecorder;
+                            mediaRecorder.start();
+                            newWindow._autoScroderStart = true;
+                        })
+                            .catch(function (err) {
+                            console.error('Error:' + err);
+                            newWindow._autoScroderStart = true;
+                            return null;
+                        });
+                    })];
+            case 4:
+                _a.sent();
+                return [4 /*yield*/, page.waitForFunction(function () {
+                        var newWindow = window;
+                        return !!newWindow._autoScroderStart;
+                    }, {
+                        timeout: 0,
+                    })];
+            case 5: return [2 /*return*/, _a.sent()];
         }
     });
 }); };

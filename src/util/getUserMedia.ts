@@ -1,10 +1,12 @@
 import * as puppeteer from 'puppeteer';
 import * as fs from 'fs';
 import { BASE_PATH } from './constant';
+import request from 'request';
 
 interface NewWindow extends Window {
   recorderVedio?(stream: any): any;
   _autoScroderIsDone?: string;
+  _autoScroderStart?: boolean;
   mediaRecorder?: MediaRecorder;
 }
 
@@ -31,13 +33,24 @@ const getUserMedia = async (page: puppeteer.Page, second: number, date: number |
 
     return new Promise((resolve, reject) => {
       try {
-        fs.writeFileSync(
-          `${BASE_PATH}/${date}/test.webm`,
-          Buffer.from(vedioSteam.split(';base64,').pop(), 'base64')
-          // vedioSteam,
-        );
-        console.log('save done');
-        resolve('done');
+        // fs.writeFileSync(
+        //   `${BASE_PATH}/${date}/test.webm`,
+        //   Buffer.from(vedioSteam.split(';base64,').pop(), 'base64')
+        //   // vedioSteam,
+        // );
+        // console.log('save done');
+        // resolve('done');
+        var decodedFile = Buffer.from(vedioSteam, 'base64');
+        var r = request.post('http://localhost:8888/upload', function (err, httpResponse, body) {
+          if (err) {
+            resolve('error');
+          }
+          console.log(body);
+
+          resolve('done');
+        });
+        var form = r.form();
+        form.append('file', decodedFile, { filename: 'test.webm' });
       } catch (error) {
         console.log('error - ', error);
         reject(error);
@@ -73,7 +86,9 @@ const getUserMedia = async (page: puppeteer.Page, second: number, date: number |
     });
   }, second);
 
-  return await page.evaluate(() => {
+  await page.waitForSelector('body');
+  await page.click('body');
+  await page.evaluate(() => {
     console.log('trigger evaluate');
     const displayCap = {
       video: {
@@ -84,10 +99,10 @@ const getUserMedia = async (page: puppeteer.Page, second: number, date: number |
     const newWindow: NewWindow = window;
     const title = document.querySelector('title');
     if (title) {
+      console.log(title);
       title.innerHTML = 'recorder-page';
     }
-    // console.log(second);
-    (navigator.mediaDevices as { getDisplayMedia: any } & typeof navigator.mediaDevices)
+    (newWindow.navigator.mediaDevices as { getDisplayMedia: any } & typeof navigator.mediaDevices)
       .getDisplayMedia(displayCap)
       .then((data: any) => {
         // console.log(data);
@@ -101,12 +116,23 @@ const getUserMedia = async (page: puppeteer.Page, second: number, date: number |
         console.log('start time: ' + showDate.getMinutes() + ':' + showDate.getSeconds());
         newWindow.mediaRecorder = mediaRecorder;
         mediaRecorder.start();
+        newWindow._autoScroderStart = true;
       })
       .catch((err: any) => {
         console.error('Error:' + err);
+        newWindow._autoScroderStart = true;
         return null;
       });
   });
+  return await page.waitForFunction(
+    () => {
+      const newWindow: NewWindow = window;
+      return !!newWindow._autoScroderStart;
+    },
+    {
+      timeout: 0,
+    }
+  );
 };
 
 export default getUserMedia;

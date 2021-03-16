@@ -8,7 +8,8 @@ exports.RESPONSE_LOG_PATH = exports.NETWORK_LOG_PATH = exports.NETWORK_ERROR_LOG
 exports.COMMAND = '';
 exports.IMAGE_TEMP_DIR = '/Users/ashes/Desktop/back-end/jdv-listener/tempAsset/';
 // export const BASE_PATH = '/app/tempAsset/';
-exports.BASE_PATH = 'D:/back-end/jdvlistener/tempAsset';
+exports.BASE_PATH = '/Users/dushihua2/Desktop/back-and/jdvlistener/tempAsset';
+// export const BASE_PATH = 'D:/back-end/jdvlistener/tempAsset';
 var JS_ERROR_LOG_PATH = function (date) { return exports.BASE_PATH + "/" + date + "/js_error.log"; };
 exports.JS_ERROR_LOG_PATH = JS_ERROR_LOG_PATH;
 var JS_LOG_PATH = function (date) { return exports.BASE_PATH + "/" + date + "/js_access.log"; };

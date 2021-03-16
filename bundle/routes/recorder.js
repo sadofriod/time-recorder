@@ -39,27 +39,43 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var puppeteer_1 = require("../util/puppeteer");
 var cron_1 = require("cron");
+var timeConvert_1 = require("../util/timeConvert");
+var uuid = require("uuid");
 var router = express_1.Router();
+var tempSourceMap = {};
 exports.default = router.post('/recorder', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var body, cookies, currentMin, job;
+    var body, cookies, startTime, second, date, setSourceMap, job_1;
     return __generator(this, function (_a) {
         body = req.body, cookies = req.cookies;
-        currentMin = new Date().getMinutes();
-        job = new cron_1.CronJob("0 " + (currentMin + 1) + " * * * *", 
-        // `0 58 * * * *`,
-        function () {
-            var d = new Date();
-            console.log('At Ten Minutes:', d.toISOString());
-            puppeteer_1.openUrls(body, cookies, job);
-        }, function () {
-            console.log('done');
-        });
-        console.log('After job instantiation');
-        console.log('Create job at', new Date().toISOString());
-        job.start();
-        res.json({
-            msg: 'Job created',
-        });
+        startTime = body.startTime, second = body.second;
+        date = uuid.v4();
+        console.log(body);
+        setSourceMap = function (key, value) {
+            tempSourceMap[key] = value;
+        };
+        if (startTime && second) {
+            job_1 = new cron_1.CronJob(timeConvert_1.timeConvert(startTime, second).join(' '), 
+            // `0 58 * * * *`,
+            function () {
+                var d = new Date();
+                console.log('At Ten Minutes:', d.toISOString());
+                puppeteer_1.openUrls(body, cookies, job_1, date);
+            }, function () {
+                console.log('done');
+            });
+            console.log('After job instantiation');
+            console.log('Create job at', new Date().toISOString());
+            job_1.start();
+            res.json({
+                msg: 'Job created',
+                key: date,
+            });
+        }
+        else {
+            res.json({
+                msg: 'error params',
+            });
+        }
         try {
             // const queueUrl =
         }

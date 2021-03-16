@@ -18,4 +18,6 @@ interface ImageOption {
   size: { width: number; height: number };
   offset?: { x: number; y: number };
   second?: number;
+  startTime?: number;
+  endTime?: number;
 }
