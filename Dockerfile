@@ -4,4 +4,3 @@ FROM base_image;
 WORKDIR /app
 RUN npm install
 ENTRYPOINT npm run build && node bundle/index.js
-EXPOSE 8080
