@@ -40,10 +40,6 @@ exports.openUrls = void 0;
 var puppeteer = require("puppeteer");
 // import { IMAGE_TEMP_DIR } from './constant';
 var getUserMedia_1 = require("./getUserMedia");
-// import * as Xvfb from 'xvfb';
-var fs = require("fs");
-// import * as uuid from 'uuid';
-var constant_1 = require("./constant");
 var converntCookie = function (cookie) {
     var keys = Object.keys(cookie);
     var result = [];
@@ -56,7 +52,7 @@ var converntCookie = function (cookie) {
     return result;
 };
 var openUrls = function (options, cookies, job, date) { return __awaiter(void 0, void 0, void 0, function () {
-    var size, url, second, width, height, sec, browser, page, pageerrorWriteStream_1, requestfinishedWriteStream_1, consoleWriteStream_1, error_1;
+    var size, url, second, width, height, sec, browser, page, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -109,13 +105,19 @@ var openUrls = function (options, cookies, job, date) { return __awaiter(void 0,
                     })];
             case 6:
                 _a.sent();
-                fs.mkdirSync(constant_1.BASE_PATH + "/" + date);
-                pageerrorWriteStream_1 = fs.createWriteStream(constant_1.JS_ERROR_LOG_PATH(date), { flags: 'a', autoClose: false });
-                requestfinishedWriteStream_1 = fs.createWriteStream(constant_1.NETWORK_LOG_PATH(date), { flags: 'a', autoClose: false });
-                consoleWriteStream_1 = fs.createWriteStream(constant_1.JS_LOG_PATH(date), { flags: 'a', autoClose: false });
+                // fs.mkdirSync(`${BASE_PATH}/${date}`);
+                // const pageerrorWriteStream = fs.createWriteStream(JS_ERROR_LOG_PATH(date), { flags: 'a', autoClose: false });
+                // const requestfailedWriteStream = fs.createWriteStream(NETWORK_ERROR_LOG_PATH(date), { flags: 'a' });
+                // const requestfinishedWriteStream = fs.createWriteStream(NETWORK_LOG_PATH(date), { flags: 'a', autoClose: false });
+                // const consoleWriteStream = fs.createWriteStream(JS_LOG_PATH(date), { flags: 'a', autoClose: false });
                 // const responseWriteStrem = fs.createWriteStream(RESPONSE_LOG_PATH(date), { flags: 'a' });
                 return [4 /*yield*/, page.goto(url)];
             case 7:
+                // fs.mkdirSync(`${BASE_PATH}/${date}`);
+                // const pageerrorWriteStream = fs.createWriteStream(JS_ERROR_LOG_PATH(date), { flags: 'a', autoClose: false });
+                // const requestfailedWriteStream = fs.createWriteStream(NETWORK_ERROR_LOG_PATH(date), { flags: 'a' });
+                // const requestfinishedWriteStream = fs.createWriteStream(NETWORK_LOG_PATH(date), { flags: 'a', autoClose: false });
+                // const consoleWriteStream = fs.createWriteStream(JS_LOG_PATH(date), { flags: 'a', autoClose: false });
                 // const responseWriteStrem = fs.createWriteStream(RESPONSE_LOG_PATH(date), { flags: 'a' });
                 _a.sent();
                 return [4 /*yield*/, page.setBypassCSP(true)];
@@ -131,7 +133,7 @@ var openUrls = function (options, cookies, job, date) { return __awaiter(void 0,
                             if (err) {
                                 try {
                                     // await streamEvent('open');
-                                    pageerrorWriteStream_1.write(new Date().toISOString() + " - " + err.message + "\n");
+                                    // pageerrorWriteStream.write(`${new Date().toISOString()} - ${err.message}\n`);
                                 }
                                 catch (error) {
                                     console.log(' page error WriteStream Error :', error);
@@ -162,8 +164,6 @@ var openUrls = function (options, cookies, job, date) { return __awaiter(void 0,
                                         header: req.headers(),
                                         response: body,
                                     };
-                                    // const streamEvent = promisify(requestfinishedWriteStream.on);
-                                    requestfinishedWriteStream_1.write(new Date().toISOString() + " - " + JSON.stringify(result, null, 2) + "\n");
                                     return [3 /*break*/, 4];
                                 case 3:
                                     error_2 = _a.sent();
@@ -189,7 +189,6 @@ var openUrls = function (options, cookies, job, date) { return __awaiter(void 0,
                                                 return [4 /*yield*/, arg.jsonValue()];
                                             case 1:
                                                 val = _a.sent();
-                                                consoleWriteStream_1.write(JSON.stringify(val) + "\n");
                                                 return [3 /*break*/, 3];
                                             case 2:
                                                 error_3 = _a.sent();
@@ -212,10 +211,10 @@ var openUrls = function (options, cookies, job, date) { return __awaiter(void 0,
                     }, { timeout: 0 })];
             case 9:
                 _a.sent();
-                pageerrorWriteStream_1.close();
+                // pageerrorWriteStream.close();
                 // requestfailedWriteStream.close();
-                requestfinishedWriteStream_1.close();
-                consoleWriteStream_1.close();
+                // requestfinishedWriteStream.close();
+                // consoleWriteStream.close();
                 job.stop();
                 return [4 /*yield*/, browser.close()];
             case 10:

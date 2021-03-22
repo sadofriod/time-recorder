@@ -2,7 +2,7 @@ import * as puppeteer from 'puppeteer';
 import { ImageOption } from 'types';
 // import { IMAGE_TEMP_DIR } from './constant';
 import getUserMedia from './getUserMedia';
-// import * as Xvfb from 'xvfb';
+import * as Xvfb from 'xvfb';
 import * as fs from 'fs';
 // import * as uuid from 'uuid';
 import {
@@ -39,12 +39,12 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
   const { width, height } = size;
   const sec = second ? second : 60000;
 
-  // const xvfb = new Xvfb({ silent: true, xvfb_args: ['-screen', '0', `${width}x${height}x24`, '-ac'] });
+  const xvfb = new Xvfb({ silent: true, xvfb_args: ['-screen', '0', `${width}x${height}x24`, '-ac'] });
   try {
-    // xvfb.startSync();
+    xvfb.startSync();
     const browser = await puppeteer.launch({
       headless: false,
-      // executablePath: '/usr/bin/google-chrome',
+      executablePath: '/usr/bin/google-chrome',
       // executablePath: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
       // executablePath: '/Applic',
       defaultViewport: null,
@@ -57,8 +57,8 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
         '--allow-http-screen-capture',
         '--disable-infobars',
         '--no-sandbox',
-        // '--start-fullscreen',
-        // '--display=' + xvfb._display,
+        '--start-fullscreen',
+        '--display=' + xvfb._display,
         '--disable-setuid-sandbox',
         '-–disable-dev-shm-usage',
         '-–no-first-run', //没有设置首页。
@@ -76,11 +76,11 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
       height: height,
     });
     fs.mkdirSync(`${BASE_PATH}/${date}`);
-    // const pageerrorWriteStream = fs.createWriteStream(JS_ERROR_LOG_PATH(date), { flags: 'a', autoClose: false });
-    // const requestfailedWriteStream = fs.createWriteStream(NETWORK_ERROR_LOG_PATH(date), { flags: 'a' });
-    // const requestfinishedWriteStream = fs.createWriteStream(NETWORK_LOG_PATH(date), { flags: 'a', autoClose: false });
-    // const consoleWriteStream = fs.createWriteStream(JS_LOG_PATH(date), { flags: 'a', autoClose: false });
-    // const responseWriteStrem = fs.createWriteStream(RESPONSE_LOG_PATH(date), { flags: 'a' });
+    const pageerrorWriteStream = fs.createWriteStream(JS_ERROR_LOG_PATH(date), { flags: 'a', autoClose: false });
+
+    const requestfinishedWriteStream = fs.createWriteStream(NETWORK_LOG_PATH(date), { flags: 'a', autoClose: false });
+    const consoleWriteStream = fs.createWriteStream(JS_LOG_PATH(date), { flags: 'a', autoClose: false });
+
     await page.goto(url);
     await page.setBypassCSP(true);
     // await page.waitForSelector('body');
@@ -91,7 +91,7 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
       if (err) {
         try {
           // await streamEvent('open');
-          // pageerrorWriteStream.write(`${new Date().toISOString()} - ${err.message}\n`);
+          pageerrorWriteStream.write(`${new Date().toISOString()} - ${err.message}\n`);
         } catch (error) {
           console.log(' page error WriteStream Error :', error);
         }
@@ -111,9 +111,9 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
             response: body,
           };
           // const streamEvent = promisify(requestfinishedWriteStream.on);
-          // requestfinishedWriteStream.write(`${new Date().toISOString()} - ${JSON.stringify(result, null, 2)}\n`);
+          requestfinishedWriteStream.write(`${new Date().toISOString()} - ${JSON.stringify(result, null, 2)}\n`);
         } catch (error) {
-          // body = await res.text();
+          body = await res.text();
           // }
           // console.log('request finished WriteStream Error :', error);
         }
@@ -146,16 +146,16 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
       { timeout: 0 }
     );
 
-    // pageerrorWriteStream.close();
-    // requestfailedWriteStream.close();
-    // requestfinishedWriteStream.close();
-    // consoleWriteStream.close();
-    job.stop();
-    await browser.close();
+    pageerrorWriteStream.close();
 
-    // xvfb.stopSync();
+    requestfinishedWriteStream.close();
+    consoleWriteStream.close();
+    await browser.close();
+    job.stop();
+
+    xvfb.stopSync();
   } catch (error) {
     console.log(error);
-    // xvfb.stopSync();
+    xvfb.stopSync();
   }
 };

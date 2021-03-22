@@ -39,14 +39,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var puppeteer_1 = require("../util/puppeteer");
 var cron_1 = require("cron");
-var timeConvert_1 = require("../util/timeConvert");
 var uuid = require("uuid");
 var router = express_1.Router();
 var tempSourceMap = {};
 exports.default = router.post('/recorder', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var body, cookies, startTime, second, date, setSourceMap, job_1;
+    var body, cookies, currentMin, startTime, second, date, setSourceMap, job_1;
     return __generator(this, function (_a) {
         body = req.body, cookies = req.cookies;
+        currentMin = new Date().getMinutes();
         startTime = body.startTime, second = body.second;
         date = uuid.v4();
         console.log(body);
@@ -54,9 +54,9 @@ exports.default = router.post('/recorder', function (req, res) { return __awaite
             tempSourceMap[key] = value;
         };
         if (startTime && second) {
-            job_1 = new cron_1.CronJob(timeConvert_1.timeConvert(startTime, second).join(' '), 
-            // `0 58 * * * *`,
-            function () {
+            job_1 = new cron_1.CronJob(
+            // timeConvert(startTime, second).join(' '),
+            "0 " + (currentMin + 1) + " * * * *", function () {
                 var d = new Date();
                 console.log('At Ten Minutes:', d.toISOString());
                 puppeteer_1.openUrls(body, cookies, job_1, date);

@@ -10,7 +10,7 @@
 
 # production
 /build
-
+/bundle
 # misc
 .DS_Store
 
