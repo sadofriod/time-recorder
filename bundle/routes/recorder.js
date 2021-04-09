@@ -43,9 +43,10 @@ var uuid = require("uuid");
 var router = express_1.Router();
 var tempSourceMap = {};
 exports.default = router.post('/recorder', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var body, cookies, currentMin, startTime, second, date, setSourceMap, job_1;
+    var body, cookies, currentSec, currentMin, startTime, second, date, setSourceMap, job_1;
     return __generator(this, function (_a) {
         body = req.body, cookies = req.cookies;
+        currentSec = new Date().getSeconds();
         currentMin = new Date().getMinutes();
         startTime = body.startTime, second = body.second;
         date = uuid.v4();
@@ -56,7 +57,7 @@ exports.default = router.post('/recorder', function (req, res) { return __awaite
         if (startTime && second) {
             job_1 = new cron_1.CronJob(
             // timeConvert(startTime, second).join(' '),
-            "0 " + (currentMin + 1) + " * * * *", function () {
+            (currentSec + 10 > 59 ? 5 : currentSec + 10) + " " + (currentSec + 10 > 59 ? currentMin + 1 : currentMin) + " * * * *", function () {
                 var d = new Date();
                 console.log('At Ten Minutes:', d.toISOString());
                 puppeteer_1.openUrls(body, cookies, job_1, date);

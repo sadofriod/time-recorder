@@ -7,8 +7,8 @@ export const COMMAND = '';
 
 export const IMAGE_TEMP_DIR = '/Users/ashes/Desktop/back-end/jdv-listener/tempAsset/';
 
-// export const BASE_PATH = '/app/tempAsset/';
-export const BASE_PATH = '/Users/dushihua2/Desktop/back-and/jdvlistener/tempAsset';
+export const BASE_PATH = '/app/tempAsset/';
+// export const BASE_PATH = '/Users/dushihua2/Desktop/back-and/jdvlistener/tempAsset';
 // export const BASE_PATH = 'D:/back-end/jdvlistener/tempAsset';
 
 export const JS_ERROR_LOG_PATH = (date: number | string) => `${BASE_PATH}/${date}/js_error.log`;

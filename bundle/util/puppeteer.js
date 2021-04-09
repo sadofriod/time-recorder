@@ -39,7 +39,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.openUrls = void 0;
 var puppeteer = require("puppeteer");
 // import { IMAGE_TEMP_DIR } from './constant';
-var getUserMedia_1 = require("./getUserMedia");
+// import getUserMedia from './getUserMedia';
+var child_process_1 = require("child_process");
+var Xvfb = require("xvfb");
+var fs = require("fs");
+// import * as uuid from 'uuid';
+var constant_1 = require("./constant");
 var converntCookie = function (cookie) {
     var keys = Object.keys(cookie);
     var result = [];
@@ -52,20 +57,25 @@ var converntCookie = function (cookie) {
     return result;
 };
 var openUrls = function (options, cookies, job, date) { return __awaiter(void 0, void 0, void 0, function () {
-    var size, url, second, width, height, sec, browser, page, error_1;
+    var size, url, second, width, height, xvfb, browser, page, ffmpeg, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 console.log(options);
                 size = options.size, url = options.url, second = options.second;
                 width = size.width, height = size.height;
-                sec = second ? second : 60000;
+                xvfb = new Xvfb({
+                    silent: true,
+                    xvfb_args: ['-screen', '0', width + "x" + height + "x24", '-ac'],
+                });
+                console.log(xvfb._display);
                 _a.label = 1;
             case 1:
-                _a.trys.push([1, 11, , 12]);
+                _a.trys.push([1, 12, , 13]);
+                xvfb.startSync();
                 return [4 /*yield*/, puppeteer.launch({
                         headless: false,
-                        // executablePath: '/usr/bin/google-chrome',
+                        executablePath: '/usr/bin/google-chrome',
                         // executablePath: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
                         // executablePath: '/Applic',
                         defaultViewport: null,
@@ -78,8 +88,8 @@ var openUrls = function (options, cookies, job, date) { return __awaiter(void 0,
                             '--allow-http-screen-capture',
                             '--disable-infobars',
                             '--no-sandbox',
-                            // '--start-fullscreen',
-                            // '--display=' + xvfb._display,
+                            '--start-fullscreen',
+                            '--display=' + xvfb._display,
                             '--disable-setuid-sandbox',
                             '-–disable-dev-shm-usage',
                             '-–no-first-run',
@@ -105,126 +115,195 @@ var openUrls = function (options, cookies, job, date) { return __awaiter(void 0,
                     })];
             case 6:
                 _a.sent();
-                // fs.mkdirSync(`${BASE_PATH}/${date}`);
+                fs.mkdirSync(constant_1.BASE_PATH + "/" + date);
                 // const pageerrorWriteStream = fs.createWriteStream(JS_ERROR_LOG_PATH(date), { flags: 'a', autoClose: false });
-                // const requestfailedWriteStream = fs.createWriteStream(NETWORK_ERROR_LOG_PATH(date), { flags: 'a' });
                 // const requestfinishedWriteStream = fs.createWriteStream(NETWORK_LOG_PATH(date), { flags: 'a', autoClose: false });
                 // const consoleWriteStream = fs.createWriteStream(JS_LOG_PATH(date), { flags: 'a', autoClose: false });
-                // const responseWriteStrem = fs.createWriteStream(RESPONSE_LOG_PATH(date), { flags: 'a' });
                 return [4 /*yield*/, page.goto(url)];
             case 7:
-                // fs.mkdirSync(`${BASE_PATH}/${date}`);
                 // const pageerrorWriteStream = fs.createWriteStream(JS_ERROR_LOG_PATH(date), { flags: 'a', autoClose: false });
-                // const requestfailedWriteStream = fs.createWriteStream(NETWORK_ERROR_LOG_PATH(date), { flags: 'a' });
                 // const requestfinishedWriteStream = fs.createWriteStream(NETWORK_LOG_PATH(date), { flags: 'a', autoClose: false });
                 // const consoleWriteStream = fs.createWriteStream(JS_LOG_PATH(date), { flags: 'a', autoClose: false });
-                // const responseWriteStrem = fs.createWriteStream(RESPONSE_LOG_PATH(date), { flags: 'a' });
                 _a.sent();
                 return [4 /*yield*/, page.setBypassCSP(true)];
             case 8:
                 _a.sent();
-                // await page.waitForSelector('body');
-                // if (index === 9) {
-                getUserMedia_1.default(page, sec, date);
-                // }
-                page.on('pageerror', function (err) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            if (err) {
-                                try {
-                                    // await streamEvent('open');
-                                    // pageerrorWriteStream.write(`${new Date().toISOString()} - ${err.message}\n`);
-                                }
-                                catch (error) {
-                                    console.log(' page error WriteStream Error :', error);
-                                }
-                            }
-                            return [2 /*return*/];
-                        });
-                    });
-                });
-                page.on('requestfinished', function (req) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var res, body, result, error_2;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    res = req.response();
-                                    body = '';
-                                    if (!res) return [3 /*break*/, 4];
-                                    _a.label = 1;
-                                case 1:
-                                    _a.trys.push([1, 3, , 4]);
-                                    return [4 /*yield*/, res.json()];
-                                case 2:
-                                    body = _a.sent();
-                                    result = {
-                                        url: req.url(),
-                                        status: res.status(),
-                                        header: req.headers(),
-                                        response: body,
-                                    };
-                                    return [3 /*break*/, 4];
-                                case 3:
-                                    error_2 = _a.sent();
-                                    return [3 /*break*/, 4];
-                                case 4: return [2 /*return*/];
-                            }
-                        });
-                    });
-                });
-                page.on('console', function (message) { return __awaiter(void 0, void 0, void 0, function () {
-                    var args;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0: return [4 /*yield*/, message.args()];
-                            case 1:
-                                args = _a.sent();
-                                args.forEach(function (arg) { return __awaiter(void 0, void 0, void 0, function () {
-                                    var val, error_3;
-                                    return __generator(this, function (_a) {
-                                        switch (_a.label) {
-                                            case 0:
-                                                _a.trys.push([0, 2, , 3]);
-                                                return [4 /*yield*/, arg.jsonValue()];
-                                            case 1:
-                                                val = _a.sent();
-                                                return [3 /*break*/, 3];
-                                            case 2:
-                                                error_3 = _a.sent();
-                                                console.log('console WriteStream Error :', error_3);
-                                                return [3 /*break*/, 3];
-                                            case 3: return [2 /*return*/];
-                                        }
-                                    });
-                                }); });
-                                return [2 /*return*/];
-                        }
-                    });
-                }); });
-                return [4 /*yield*/, page.waitForFunction(function () {
-                        var newWindow = window;
-                        console.log(newWindow._autoScroderIsDone);
-                        var showDate = new Date();
-                        console.log('recorder time: ' + showDate.getMinutes() + ':' + showDate.getSeconds());
-                        return !!newWindow._autoScroderIsDone;
-                    }, { timeout: 0 })];
+                console.log(xvfb._display);
+                page.waitForSelector('div');
+                return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 20000); })];
             case 9:
                 _a.sent();
+                ffmpeg = child_process_1.spawn('ffmpeg', [
+                    '-r',
+                    '24',
+                    // '-framerate 30',
+                    '-f',
+                    'x11grab',
+                    '-s',
+                    width + "x" + height,
+                    '-i',
+                    xvfb._display,
+                    '-c:v',
+                    'libvpx',
+                    '-quality',
+                    'realtime',
+                    '-cpu-used',
+                    '0',
+                    // '-b:v',
+                    // '384k',
+                    '-qmin',
+                    '10',
+                    '-qmax',
+                    '42',
+                    '-maxrate',
+                    '384k',
+                    // '-bufsize',
+                    // '1024k',
+                    '-an',
+                    constant_1.BASE_PATH + "/" + date + "/screen.webm",
+                ]);
+                // ffmpeg.kill(ffmpeg.pid)
+                // await page.waitForSelector('body');
+                // if (index === 9) {
+                // getUserMedia(page, sec, date);
+                // }
+                // page.on('pageerror', async function (err) {
+                //   if (err) {
+                //     try {
+                //       // await streamEvent('open');
+                //       pageerrorWriteStream.write(`${new Date().toISOString()} - ${err.message}\n`);
+                //     } catch (error) {
+                //       console.log(' page error WriteStream Error :', error);
+                //     }
+                //   }
+                // });
+                // page.on('requestfinished', async function (req) {
+                //   const res = req.response();
+                //   let body: any = '';
+                //   if (res) {
+                //     try {
+                //       body = await res.json();
+                //       const result = {
+                //         url: req.url(),
+                //         status: res.status(),
+                //         header: req.headers(),
+                //         response: body,
+                //       };
+                //       // const streamEvent = promisify(requestfinishedWriteStream.on);
+                //       requestfinishedWriteStream.write(`${new Date().toISOString()} - ${JSON.stringify(result, null, 2)}\n`);
+                //     } catch (error) {
+                //       body = await res.text();
+                //       // }
+                //       // console.log('request finished WriteStream Error :', error);
+                //     }
+                //   }
+                // });
+                // page.on('console', async (message) => {
+                //   const args = await message.args();
+                //   args.forEach(async (arg: any) => {
+                //     try {
+                //       const val = await arg.jsonValue();
+                //       // consoleWriteStream.write(`${JSON.stringify(val)}\n`);
+                //     } catch (error) {
+                //       console.log('console WriteStream Error :', error);
+                //     }
+                //   });
+                // });
+                // await page.waitForFunction(
+                //   () => {
+                //     const newWindow: {
+                //       recorderVedio?(stream: any): any;
+                //       _autoScroderIsDone?: string;
+                //     } & typeof window = window;
+                //     console.log(newWindow._autoScroderIsDone);
+                //     const showDate = new Date();
+                //     console.log('recorder time: ' + showDate.getMinutes() + ':' + showDate.getSeconds());
+                //     return !!newWindow._autoScroderIsDone;
+                //   },
+                //   { timeout: 0 }
+                // );
+                return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, second); })];
+            case 10:
+                // ffmpeg.kill(ffmpeg.pid)
+                // await page.waitForSelector('body');
+                // if (index === 9) {
+                // getUserMedia(page, sec, date);
+                // }
+                // page.on('pageerror', async function (err) {
+                //   if (err) {
+                //     try {
+                //       // await streamEvent('open');
+                //       pageerrorWriteStream.write(`${new Date().toISOString()} - ${err.message}\n`);
+                //     } catch (error) {
+                //       console.log(' page error WriteStream Error :', error);
+                //     }
+                //   }
+                // });
+                // page.on('requestfinished', async function (req) {
+                //   const res = req.response();
+                //   let body: any = '';
+                //   if (res) {
+                //     try {
+                //       body = await res.json();
+                //       const result = {
+                //         url: req.url(),
+                //         status: res.status(),
+                //         header: req.headers(),
+                //         response: body,
+                //       };
+                //       // const streamEvent = promisify(requestfinishedWriteStream.on);
+                //       requestfinishedWriteStream.write(`${new Date().toISOString()} - ${JSON.stringify(result, null, 2)}\n`);
+                //     } catch (error) {
+                //       body = await res.text();
+                //       // }
+                //       // console.log('request finished WriteStream Error :', error);
+                //     }
+                //   }
+                // });
+                // page.on('console', async (message) => {
+                //   const args = await message.args();
+                //   args.forEach(async (arg: any) => {
+                //     try {
+                //       const val = await arg.jsonValue();
+                //       // consoleWriteStream.write(`${JSON.stringify(val)}\n`);
+                //     } catch (error) {
+                //       console.log('console WriteStream Error :', error);
+                //     }
+                //   });
+                // });
+                // await page.waitForFunction(
+                //   () => {
+                //     const newWindow: {
+                //       recorderVedio?(stream: any): any;
+                //       _autoScroderIsDone?: string;
+                //     } & typeof window = window;
+                //     console.log(newWindow._autoScroderIsDone);
+                //     const showDate = new Date();
+                //     console.log('recorder time: ' + showDate.getMinutes() + ':' + showDate.getSeconds());
+                //     return !!newWindow._autoScroderIsDone;
+                //   },
+                //   { timeout: 0 }
+                // );
+                _a.sent();
+                ffmpeg.kill();
                 // pageerrorWriteStream.close();
-                // requestfailedWriteStream.close();
                 // requestfinishedWriteStream.close();
                 // consoleWriteStream.close();
-                job.stop();
                 return [4 /*yield*/, browser.close()];
-            case 10:
-                _a.sent();
-                return [3 /*break*/, 12];
             case 11:
+                // pageerrorWriteStream.close();
+                // requestfinishedWriteStream.close();
+                // consoleWriteStream.close();
+                _a.sent();
+                xvfb.stopSync();
+                job.stop();
+                return [3 /*break*/, 13];
+            case 12:
                 error_1 = _a.sent();
-                console.log(error_1);
-                return [3 /*break*/, 12];
-            case 12: return [2 /*return*/];
+                console.log('process error----', error_1);
+                xvfb.stopSync();
+                return [3 /*break*/, 13];
+            case 13: return [2 /*return*/];
         }
     });
 }); };

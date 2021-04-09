@@ -1,12 +1,15 @@
 FROM ubuntu:16.04
 
-RUN echo
+# Add ffmpeg repository
+RUN apt-get -qqy update && \
+  apt-get -qqy install software-properties-common && \
+  add-apt-repository ppa:jonathonf/ffmpeg-4 && \
+  apt-get -qqy install ffmpeg
 
 #
 # BASE PACKAGES
 # docker run --name listener-test -v D:\back-end\jdvlistene:/app -p 8080:8080 -it jdvlistener bash
-RUN apt-get -qqy update \
-  && apt-get -qqy --no-install-recommends install \
+RUN apt-get -qqy --no-install-recommends install \
   bzip2 \
   ca-certificates \
   unzip \

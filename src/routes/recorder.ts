@@ -9,6 +9,7 @@ const tempSourceMap: any = {};
 
 export default router.post<any, any, ImageOption>('/recorder', async (req, res) => {
   const { body, cookies } = req;
+  const currentSec = new Date().getSeconds();
   const currentMin = new Date().getMinutes();
   const { startTime, second } = body;
   const date = uuid.v4();
@@ -19,7 +20,7 @@ export default router.post<any, any, ImageOption>('/recorder', async (req, res) 
   if (startTime && second) {
     const job = new CronJob(
       // timeConvert(startTime, second).join(' '),
-      `0 ${currentMin + 1} * * * *`,
+      `${currentSec + 10 > 59 ? 5 : currentSec + 10} ${currentSec + 10 > 59 ? currentMin + 1 : currentMin} * * * *`,
       function () {
         const d = new Date();
         console.log('At Ten Minutes:', d.toISOString());

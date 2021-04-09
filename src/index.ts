@@ -25,7 +25,7 @@ app.all('*', function (req, res, next) {
 
 app.use(recorder);
 app.use(express.static('/tempAsset'));
-app.listen(80, '0.0.0.0', function () {
+app.listen(8080, '0.0.0.0', function () {
   // const { } = listen;
   console.log('server start on 8080');
 });
