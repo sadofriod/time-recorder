@@ -1,15 +1,23 @@
 {
   "compilerOptions": {
-    "target": "es5",                  
-    "module": "commonjs",                                       
-    "sourceMap": true,                  
-    "outDir": "./bundle",                 
-    "strict": true,                       
-    "baseUrl": "./src",                   
-    "rootDirs": ["./"],   
+    "target": "es5",
+    "module": "commonjs",
+    "sourceMap": true,
+    "outDir": "./bundle",
+    "strict": true,
+    "baseUrl": "./src",
+    "rootDirs": [
+      "./"
+    ],
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,                     
-    "forceConsistentCasingInFileNames": true  
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "exclude": ["node_modules", "tempAsset","access*.*","error*.*"]
+  "exclude": [
+    "node_modules",
+    "tempAsset",
+    "tempAsset/*.*",
+    "access*.*",
+    "error*.*"
+  ]
 }

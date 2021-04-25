@@ -7,7 +7,7 @@
     "dev": "rm -rf tempAsset/* && rm -rf bundle/* && pm2 start ecosystem.config.js --update-env  && npm run watch:build ",
     "start": "rm -rf tempAsset/* && rm -rf bundle/* && pm2 start ecosystem.config.js --update-env && npm run watch:build ",
     "build": "tsc",
-    "watch:build": "rm -rf tempAsset/* && tsc-watch --onSuccess 'nodemon ./bundle/index.js' ",
+    "watch:build": "rm -rf tempAsset/* && tsc-watch --onSuccess 'nodemon --ignore tempAsset ./bundle/index.js ' ",
     "watch:server": "nodemon './bundle/index.js' --watch './bundle"
   },
   "author": "",

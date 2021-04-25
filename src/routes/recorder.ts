@@ -20,7 +20,7 @@ export default router.post<any, any, ImageOption>('/recorder', async (req, res) 
   if (startTime && second) {
     const job = new CronJob(
       // timeConvert(startTime, second).join(' '),
-      `${currentSec + 10 > 59 ? 5 : currentSec + 10} ${currentSec + 10 > 59 ? currentMin + 1 : currentMin} * * * *`,
+      `${currentSec + 3 > 59 ? 5 : currentSec + 3} ${currentSec + 3 > 59 ? currentMin + 1 : currentMin} * * * *`,
       function () {
         const d = new Date();
         console.log('At Ten Minutes:', d.toISOString());
