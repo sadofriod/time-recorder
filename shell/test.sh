@@ -13,4 +13,6 @@
 Xvfb :10086 -screen 0 1920x1080x16 -noreset
 
 # 启动浏览器
-chromium-browser --disable-setuid-sandbox --disable-gpu --no-sandbox --kiosk --display=45525 --window-siez=4800,2160 --app=https://jd.com
+google-chrome --disable-setuid-sandbox --disable-gpu --no-sandbox --kiosk --display=10086 --window-siez=4800,2160 --app=https://jd.com
+
+ffmpeg -f x11grab -r 25 -s 1920x1080 -vcodec copy -bsf:v hevc_metadata=num_ticks_poc_diff_one -i :10086 tempAsset/out_222.mpeg -y

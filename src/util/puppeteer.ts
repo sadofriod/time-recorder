@@ -7,6 +7,7 @@ import { CronJob } from 'cron';
 import { xvfbStart, xvfbStop } from './xvfb';
 import * as fs from 'fs';
 import { ffmpegStop, startCapture } from './ffmpeg';
+import { startRecorder } from './log';
 
 const converntCookie = (cookie: any) => {
   const keys = Object.keys(cookie);
@@ -26,26 +27,16 @@ interface Options extends Omit<ImageOption, 'url'> {
 }
 
 export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, job: CronJob, date: string) => {
-  // console.log(options);
-
   const { size, url, second } = options;
   const { width, height } = size;
-  // const sec = second ? second : 60000;
-
-  // const xvfb = new Xvfb({
-  //   silent: true,
-  //   xvfb_args: ['-screen', '0', `${width}x${height}x24`, '-ac'],
-  // });
-  // console.log(xvfb._display);
+  fs.mkdirSync(`${BASE_PATH}${date}`);
 
   try {
-    // xvfb.startSync();
     const display = await xvfbStart(date, {
       width,
       height,
-      depth: 16,
+      depth: 24,
     });
-    // console.log(display);
 
     const browser = await puppeteer.launch({
       headless: false,
@@ -82,32 +73,17 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
     });
 
     await page.goto(url);
-    await page.setBypassCSP(true);
-    // console.log(xvfb._display);
-    page.waitForSelector('div');
-    // await new Promise((r) => setTimeout(r, 20000));
-    fs.mkdirSync(`${BASE_PATH}${date}`);
-    // let count = 0;
+    startRecorder(date, page);
     startCapture(date, display, {
       width,
       height,
       framerate: 30,
     });
+    await page.setBypassCSP(true);
+    page.waitForSelector('div');
+
     await new Promise((r) => setTimeout(r, second as number));
-    // await new Promise((R) => {
-    //   setInterval(() => {
-    //     if (second && count <= second) {
-    //       startCapture(date, display, {
-    //         width,
-    //         height,
-    //         framerate: 30,
-    //       });
-    //       count++;
-    //     } else {
-    //       R('done');
-    //     }
-    //   }, 1000);
-    // });
+
     ffmpegStop(date);
     await browser.close();
     await xvfbStop(date);
@@ -115,6 +91,13 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
   } catch (error) {
     console.log('process error----', error);
     // await browser.close();
+    fs.rmdir(`${BASE_PATH}${date}`, { recursive: true }, (err) => {
+      if (err) {
+        throw err;
+      }
+
+      console.log(`${date} is deleted!`);
+    });
     await xvfbStop(date);
     job.stop();
   }

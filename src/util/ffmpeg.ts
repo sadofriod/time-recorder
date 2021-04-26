@@ -1,4 +1,4 @@
-import { spawnSync, spawn, ChildProcessWithoutNullStreams } from 'child_process';
+import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 import { BASE_PATH } from './constant';
 
 // import * as util from 'util';
@@ -21,33 +21,35 @@ class FFmpeg {
 
 const ffmpegIns = new FFmpeg();
 
-export const startCapture = (
+export const startCapture = async (
   key: string,
   display: number,
   option: { width: number; height: number; framerate: number },
   extname = 0
-) => {
+): Promise<any> => {
   const { width, height, framerate } = option;
 
-  // if (extname < framerate) {
-  const ffmpeg = spawn('ffmpeg', [
-    '-f',
-    'x11grab',
-    '-r',
-    '25',
-    '-s',
-    `${width}x${height}`,
-    '-i',
-    ':' + display,
-    // 'out_' + extname + '.mepeg',
-    `${BASE_PATH}${key}/out_${extname}.mpeg`,
-  ]);
-  // await new Promise((res) => setTimeout(res, Math.floor(1000 / framerate)));
-  ffmpegIns.setFFmpeg(key, ffmpeg);
-  // return startCapture(key, display, option, extname + 1);
-  // } else {
-  //   return 'done';
-  // }
+  if (extname < framerate) {
+    const ffmpeg = spawn('ffmpeg', [
+      '-f',
+      'x11grab',
+      // '-r',
+      // '25',
+      '-framerate',
+      '24',
+      '-s',
+      `${width}x${height}`,
+      '-i',
+      ':' + display,
+      // 'out_' + extname + '.mepeg',
+      `${BASE_PATH}${key}/out_${extname}.mpeg`,
+    ]);
+    ffmpeg.stderr.on('data', (data) => console.log(data.toString()));
+    // await new Promise((res) => setTimeout(res, Math.floor(1000 / framerate)));
+    ffmpegIns.setFFmpeg(key, ffmpeg);
+  } else {
+    return 'done';
+  }
 };
 
 export const startRecorder = async (key: string, display: number, option: { width: number; height: number }) => {

@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cookie from 'cookie-parser';
 import recorder from './routes/recorder';
+import { BASE_PATH } from './util/constant';
 
 const app = express();
 
@@ -24,7 +25,7 @@ app.all('*', function (req, res, next) {
 });
 
 app.use(recorder);
-app.use(express.static('/tempAsset'));
+app.use(express.static(`${BASE_PATH}`));
 app.listen(8080, '0.0.0.0', function () {
   // const { } = listen;
   console.log('server start on 8080');

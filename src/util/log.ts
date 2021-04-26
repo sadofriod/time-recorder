@@ -36,16 +36,28 @@ class Logs {
 
 const logs = new Logs();
 
-export const startRecorder = async (key: string, page: puppeteer.Page) => {
-  const pageAsync = util.promisify(page.on);
+const promisify = (fn: (...arg: any[]) => any) => {
+  return (...arg: any[]) =>
+    new Promise((res) => {
+      const tempRes = (val: any) => {
+        console.log(val);
+        res(val);
+      };
+      fn(...arg, tempRes);
+    });
+};
 
-  const pageError = (await pageAsync('pageerror')) as PageEventObj['pageerror'];
-  const jsLog = (await pageAsync('console')) as PageEventObj['console'];
-  const network = (await pageAsync('requestfinished')) as PageEventObj['requestfinished'];
-  const networkEorror = (await pageAsync('requestfailed')) as PageEventObj['requestfailed'];
+export const startRecorder = async (key: string, page: puppeteer.Page) => {
+  // const pageAsync = util.promisify(page.on);
+  const pageAsync = (arg: keyof puppeteer.PageEventObj) => new Promise((res) => page.on(arg, res));
+
+  const pageError: any = await pageAsync('pageerror');
+  console.log(pageError);
+  const jsLog: any = await pageAsync('console');
+  const network: any = await pageAsync('requestfinished');
+  const networkEorror: any = await pageAsync('requestfailed');
 
   if (isDev) {
-    fs.mkdirSync(`${BASE_PATH}/${key}`);
     const pageerrorWriteStream = fs.createWriteStream(JS_ERROR_LOG_PATH(key), { flags: 'a', autoClose: false });
     const requestfinishedWriteStream = fs.createWriteStream(NETWORK_LOG_PATH(key), { flags: 'a', autoClose: false });
     const consoleWriteStream = fs.createWriteStream(JS_LOG_PATH(key), { flags: 'a', autoClose: false });
