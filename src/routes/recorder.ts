@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { ImageOption } from 'types';
 import { openUrls } from '../util/puppeteer';
 import { CronJob } from 'cron';
-import { timeConvert } from '../util/timeConvert';
+// import { timeConvert } from '../util/timeConvert';
 import * as uuid from 'uuid';
 const router = Router();
 const tempSourceMap: any = {};
@@ -13,7 +13,7 @@ export default router.post<any, any, ImageOption>('/recorder', async (req, res) 
   const currentMin = new Date().getMinutes();
   const { startTime, second } = body;
   const date = uuid.v4();
-  console.log(body);
+  // console.log(body);
   const setSourceMap = (key: string, value: { video: string; log: string }) => {
     tempSourceMap[key] = value;
   };

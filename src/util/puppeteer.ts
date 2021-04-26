@@ -1,12 +1,12 @@
 import * as puppeteer from 'puppeteer';
 import { ImageOption } from 'types';
 import { spawn } from 'child_process';
-import * as Xvfb from 'xvfb';
-import {
-  BASE_PATH,
-} from './constant';
+// import * as Xvfb from 'xvfb';
+import { BASE_PATH } from './constant';
 import { CronJob } from 'cron';
 import { xvfbStart, xvfbStop } from './xvfb';
+import * as fs from 'fs';
+import { ffmpegStop, startCapture } from './ffmpeg';
 
 const converntCookie = (cookie: any) => {
   const keys = Object.keys(cookie);
@@ -26,7 +26,7 @@ interface Options extends Omit<ImageOption, 'url'> {
 }
 
 export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, job: CronJob, date: string) => {
-  console.log(options);
+  // console.log(options);
 
   const { size, url, second } = options;
   const { width, height } = size;
@@ -43,13 +43,13 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
     const display = await xvfbStart(date, {
       width,
       height,
-      depth: 16
-    })
-    console.log(display);
+      depth: 16,
+    });
+    // console.log(display);
 
     const browser = await puppeteer.launch({
       headless: false,
-      // executablePath: '/usr/bin/google-chrome',
+      executablePath: '/usr/bin/google-chrome',
       // executablePath: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
       // executablePath: '/Applic',
       defaultViewport: null,
@@ -81,50 +81,41 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
       height: height,
     });
 
-
     await page.goto(url);
     await page.setBypassCSP(true);
     // console.log(xvfb._display);
     page.waitForSelector('div');
-    await new Promise((r) => setTimeout(r, 20000));
-    const ffmpeg = spawn('ffmpeg', [
-      '-r',
-      '24',
-      // '-framerate 30',
-      '-f',
-      'x11grab',
-      '-s',
-      `${width}x${height}`,
-      '-i',
-      // xvfb._display,
-      '-c:v',
-      'libvpx',
-      '-quality',
-      'realtime',
-      '-cpu-used',
-      '0',
-      // '-b:v',
-      // '384k',
-      '-qmin',
-      '10',
-      '-qmax',
-      '42',
-      '-maxrate',
-      '384k',
-      // '-bufsize',
-      // '1024k',
-      '-an',
-      `${BASE_PATH}/${date}/screen.webm`,
-    ]);
-
+    // await new Promise((r) => setTimeout(r, 20000));
+    fs.mkdirSync(`${BASE_PATH}${date}`);
+    // let count = 0;
+    startCapture(date, display, {
+      width,
+      height,
+      framerate: 30,
+    });
     await new Promise((r) => setTimeout(r, second as number));
-    ffmpeg.kill();
-
+    // await new Promise((R) => {
+    //   setInterval(() => {
+    //     if (second && count <= second) {
+    //       startCapture(date, display, {
+    //         width,
+    //         height,
+    //         framerate: 30,
+    //       });
+    //       count++;
+    //     } else {
+    //       R('done');
+    //     }
+    //   }, 1000);
+    // });
+    ffmpegStop(date);
     await browser.close();
-    await xvfbStop(date)
+    await xvfbStop(date);
     job.stop();
   } catch (error) {
     console.log('process error----', error);
-    // xvfb.stopSync();
+    // await browser.close();
+    await xvfbStop(date);
+    job.stop();
   }
 };

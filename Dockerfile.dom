@@ -19,6 +19,7 @@ RUN apt-get -qqy --no-install-recommends install \
   jq \
   zip \
   xvfb \
+  x11-utils \
   pulseaudio \
   dbus \
   dbus-x11 \
