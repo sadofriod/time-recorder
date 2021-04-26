@@ -4,7 +4,7 @@ FROM base_image;
 ADD ./ /home/admin/app
 WORKDIR /home/admin/app
 RUN npm install
-ENTRYPOINT mkdir -p /export/Logs/node.log/ && \
+ENTRYPOINT mkdir -p /export/Logs/ && mkdir -p /export/Logs/node.log/ && \
 cd /export/Logs/node.log/ && \
 touch access.log && \
 cd /home/admin/app/ && \
