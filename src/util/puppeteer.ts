@@ -1,6 +1,6 @@
 import * as puppeteer from 'puppeteer';
 import { ImageOption } from 'types';
-import { spawn } from 'child_process';
+// import { spawn } from 'child_process';
 // import * as Xvfb from 'xvfb';
 import { BASE_PATH } from './constant';
 import { CronJob } from 'cron';
