@@ -4,8 +4,6 @@ FROM base_image;
 ADD ./ /home/admin/app
 WORKDIR /home/admin/app
 RUN npm install
-ENTRYPOINT mkdir -p /export/logs && \
-touch /export/logs/error.log && \
-mkdir tempAsset && \
+ENTRYPOINT mkdir tempAsset && \
 npm run build && \
-node bundle/index.js &> /export/logs/error.log
+node bundle/index.js 
