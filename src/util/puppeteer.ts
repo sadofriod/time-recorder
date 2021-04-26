@@ -73,6 +73,8 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
     });
 
     await page.goto(url);
+    page.waitForSelector('div');
+    await new Promise((r) => setTimeout(r, 60000 as number));
     startRecorder(date, page);
     startCapture(date, display, {
       width,
@@ -80,8 +82,6 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
       framerate: 30,
     });
     await page.setBypassCSP(true);
-    page.waitForSelector('div');
-
     await new Promise((r) => setTimeout(r, second as number));
 
     ffmpegStop(date);
