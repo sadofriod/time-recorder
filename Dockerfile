@@ -4,6 +4,7 @@ FROM base_image;
 ADD ./ /home/admin/app
 WORKDIR /home/admin/app
 RUN npm install
-ENTRYPOINT mkdir tempAsset && \
+ENTRYPOINT /usr/sbin/sshd && \
+mkdir tempAsset && \
 npm run build && \
 node bundle/index.js 
