@@ -62,9 +62,8 @@ export const startRecorder = async (key: string, display: number, option: { widt
   const { width, height } = option;
   try {
     const ffmpeg = spawn('ffmpeg', [
-      '-r',
-      '24',
-      '-framerate 30',
+      '-framerate',
+      '12',
       '-f',
       'x11grab',
       '-s',
@@ -78,16 +77,16 @@ export const startRecorder = async (key: string, display: number, option: { widt
       'realtime',
       '-cpu-used',
       '0',
-      // '-b:v',
-      // '384k',
+      '-b:v',
+      '384k',
       '-qmin',
       '10',
       '-qmax',
       '42',
       '-maxrate',
       '384k',
-      // '-bufsize',
-      // '1024k',
+      '-bufsize',
+      '1024k',
       '-an',
       `${BASE_PATH}${key}/screen.webm`,
     ]);

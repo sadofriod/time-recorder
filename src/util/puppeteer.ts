@@ -7,7 +7,8 @@ import { CronJob } from 'cron';
 import { xvfbStart, xvfbStop } from './xvfb';
 import * as fs from 'fs';
 import { ffmpegStop, startCapture } from './ffmpeg';
-import { startRecorder } from './log';
+// import { startRecorder } from './log';
+import { startRecorder } from './ffmpeg';
 
 const converntCookie = (cookie: any) => {
   const keys = Object.keys(cookie);
@@ -75,11 +76,11 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
     await page.goto(url);
     page.waitForSelector('div');
     await new Promise((r) => setTimeout(r, 60000 as number));
-    startRecorder(date, page);
-    startCapture(date, display, {
+    // startRecorder(date, page);
+    startRecorder(date, display, {
       width,
       height,
-      framerate: 30,
+      // framerate: 30,
     });
     await page.setBypassCSP(true);
     await new Promise((r) => setTimeout(r, second as number));
