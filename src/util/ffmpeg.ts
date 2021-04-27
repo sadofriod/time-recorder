@@ -41,6 +41,12 @@ export const startCapture = async (
       `${width}x${height}`,
       '-i',
       ':' + display,
+      '-c:v',
+      'libvpx',
+      '-quality',
+      'realtime',
+      '-cpu-used',
+      '0',
       // 'out_' + extname + '.mepeg',
       `${BASE_PATH}${key}/out_${extname}.mpeg`,
     ]);
