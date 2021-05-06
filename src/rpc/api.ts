@@ -34,7 +34,9 @@ export const createTask = (data: { key: string; body: Partial<TaskItem>; cookie:
     // r.cookie && r.cookie(data.cookie);
     r.post(`${baseRPCUrl}${CREATE_TASK}`, (err, response, body) => {
       if (err) {
-        rej(response.body);
+        console.log(err);
+
+        rej(response);
       } else {
         const { data, code, message } = body;
         if (code === 200) {
@@ -55,7 +57,7 @@ export const getTasks = (data: { status: TaskItem['status']; pageNo: number; pag
     // r.cookie && r.cookie(data.cookie);
     r.post(`${baseRPCUrl}${GET_TASKS}`, (err, response, body) => {
       if (err) {
-        rej(response.body);
+        rej(response);
       } else {
         const { data, message, code } = body;
         if (code === 200) {
@@ -76,7 +78,7 @@ export const updateTask = (data: Partial<TaskItem>, cookie: any) => {
     // r.cookie && r.cookie(cookie);
     r.post(`${baseRPCUrl}${UPDATE_TASK}`, (err, response, body) => {
       if (err) {
-        rej(response.body);
+        rej(response);
       } else {
         const { data, message, code } = body;
         if (code === 200) {
@@ -102,25 +104,25 @@ export const fileUpload = (key: string, id: number, isVideo: boolean, cookie: an
         : fs.createReadStream(`${BASE_PATH}${key}/network_access.log`),
     };
 
-    formData.file.on('end', () => {
-      console.log('trigger');
+    // formData.file.on('end', () => {
+    //   console.log('trigger');
 
-      const r = request.post({ url: `${baseRPCUrl}${UPLOAD_FILE}`, formData }, (err, response, body) => {
-        if (err) {
-          rej(err);
+    // });
+    const r = request.post({ url: `${baseRPCUrl}${UPLOAD_FILE}`, formData }, (err, response, body) => {
+      if (err) {
+        rej(err);
+      } else {
+        const { data, message, code } = JSON.parse(body);
+        console.log(data);
+
+        if (code === 200) {
+          res(data);
         } else {
-          const { data, message, code } = JSON.parse(body);
-          console.log(data);
-
-          if (code === 200) {
-            res(data);
-          } else {
-            rej(`文件${key}/${isVideo ? 'screen.webm' : 'network_access.log'}上传失败：${message}`);
-          }
+          rej(`文件${key}/${isVideo ? 'screen.webm' : 'network_access.log'}上传失败：${message}`);
         }
-      });
-
-      r.setHeader('cookie', cookie);
+      }
     });
+
+    r.setHeader('cookie', cookie);
   });
 };

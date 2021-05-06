@@ -90,11 +90,13 @@ export const openUrls = async (
 
     ffmpegStop(date);
     stopLogRecorder(date);
-    await fileUpload(date, task.getTask(date).id, true, cookieString);
-    await fileUpload(date, task.getTask(date).id, false, cookieString);
+    const video = await fileUpload(date, task.getTask(date).id, true, cookieString);
+    const log = await fileUpload(date, task.getTask(date).id, false, cookieString);
+    console.log(log, video);
+
+    await updateTask({ id: task.getTask(date).id, status: 9 }, cookieString);
     await browser.close();
     await xvfbStop(date);
-    await updateTask({ id: task.getTask(date).id, status: 9 }, cookieString);
     job.stop();
   } catch (error) {
     console.log('process error----', error);
