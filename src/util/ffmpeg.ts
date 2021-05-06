@@ -1,4 +1,5 @@
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
+import { fileUpload } from '../rpc/api';
 import { BASE_PATH } from './constant';
 
 // import * as util from 'util';
@@ -98,7 +99,7 @@ export const startRecorder = async (key: string, display: number, option: { widt
   }
 };
 
-export const ffmpegStop = (key: string) => {
+export const ffmpegStop = async (key: string) => {
   const ffmpeg = ffmpegIns.getFFmpeg(key);
   return ffmpeg.kill();
 };

@@ -21,3 +21,5 @@ interface ImageOption {
   startTime?: number;
   endTime?: number;
 }
+
+declare module 'uuid';

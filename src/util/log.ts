@@ -1,17 +1,9 @@
-import {
-  BASE_PATH,
-  isDev,
-  JS_ERROR_LOG_PATH,
-  JS_LOG_PATH,
-  // NETWORK_ERROR_LOG_PATH,
-  NETWORK_LOG_PATH,
-  // RESPONSE_LOG_PATH,
-} from './constant';
+import { isDev, JS_ERROR_LOG_PATH, JS_LOG_PATH, NETWORK_LOG_PATH } from './constant';
 import * as fs from 'fs';
 import * as puppeteer from 'puppeteer';
-import * as util from 'util';
-import { PageEventObj } from 'puppeteer';
+import { ConsoleMessage, PageEventObj, Request } from 'puppeteer';
 
+type CustomStream = string | fs.WriteStream;
 interface LogSetItem<ITEMTYPE> {
   jsError: string | fs.WriteStream;
   jsLog: string | fs.WriteStream;
@@ -36,53 +28,76 @@ class Logs {
 
 const logs = new Logs();
 
-const promisify = (fn: (...arg: any[]) => any) => {
-  return (...arg: any[]) =>
-    new Promise((res) => {
-      const tempRes = (val: any) => {
-        console.log(val);
-        res(val);
-      };
-      fn(...arg, tempRes);
-    });
+const sumContent = (stream: CustomStream, content: string) => {
+  if (typeof stream === 'string') {
+    stream += `\n${content}`;
+  } else {
+    stream.write(content);
+  }
 };
 
-export const startRecorder = async (key: string, page: puppeteer.Page) => {
-  // const pageAsync = util.promisify(page.on);
-  const pageAsync = (arg: keyof puppeteer.PageEventObj) => new Promise((res) => page.on(arg, res));
+const consoleAnalyze = (chunk: ConsoleMessage, stream: CustomStream) => {
+  sumContent(stream, chunk.text());
+};
 
-  const pageError: any = await pageAsync('pageerror');
-  console.log(pageError);
-  const jsLog: any = await pageAsync('console');
-  const network: any = await pageAsync('requestfinished');
-  const networkEorror: any = await pageAsync('requestfailed');
-
-  if (isDev) {
-    const pageerrorWriteStream = fs.createWriteStream(JS_ERROR_LOG_PATH(key), { flags: 'a', autoClose: false });
-    const requestfinishedWriteStream = fs.createWriteStream(NETWORK_LOG_PATH(key), { flags: 'a', autoClose: false });
-    const consoleWriteStream = fs.createWriteStream(JS_LOG_PATH(key), { flags: 'a', autoClose: false });
-    logs.setLog<fs.WriteStream>(key, {
-      jsError: pageerrorWriteStream,
-      jsLog: consoleWriteStream,
-      networkLog: requestfinishedWriteStream,
-    });
-    pageerrorWriteStream.write(pageError.message);
-    consoleWriteStream.write(jsLog.text());
-    const errorReq = networkEorror.response();
-    const error = errorReq ? errorReq.url() + ' _ ' + errorReq.remoteAddress() : 'response has error';
-    requestfinishedWriteStream.write(error);
-    const finishReq = network.response();
+const networkAnalyze = async (chunk: Request, stream: CustomStream) => {
+  const res = chunk.response();
+  if (res) {
     try {
-      const finish = finishReq ? await finishReq.json() : 'response is empty';
-      requestfinishedWriteStream.write(finish);
+      const json = (await res.json()) || 'no response';
+      sumContent(stream, JSON.stringify(json));
     } catch (error) {
-      requestfinishedWriteStream.write(finishReq ? finishReq.text() : 'response is empty');
-      console.log(error);
+      const text = await res.text();
+      sumContent(stream, text);
     }
-  } else {
-    // const pageErrorStr = logs.getLog<string>(key).jsError
-    // const networkStr = logs.getLog<string>(key).networkLog
-    // const jsLog = logs.getLog<string>(key).jsLog
+  }
+};
+const errorAnalyze = (chunk: Error, stream: CustomStream) => {
+  sumContent(stream, chunk.message);
+};
+
+const contentAnalyze = (type: keyof PageEventObj, chunk: ConsoleMessage | Request | Error, stream: CustomStream) => {
+  switch (type) {
+    case 'requestfinished' || 'requestfailed':
+      networkAnalyze(chunk as Request, stream);
+      break;
+    case 'console':
+      consoleAnalyze(chunk as ConsoleMessage, stream);
+      break;
+    default:
+      errorAnalyze(chunk as Error, stream);
+  }
+};
+
+export const startLogRecorder = async (key: string, page: puppeteer.Page) => {
+  const pageerrorWriteStream = isDev
+    ? fs.createWriteStream(JS_ERROR_LOG_PATH(key), { flags: 'a', autoClose: false })
+    : '';
+  const requestfinishedWriteStream = isDev
+    ? fs.createWriteStream(NETWORK_LOG_PATH(key), { flags: 'a', autoClose: false })
+    : '';
+  const consoleWriteStream = isDev ? fs.createWriteStream(JS_LOG_PATH(key), { flags: 'a', autoClose: false }) : '';
+  logs.setLog<fs.WriteStream>(key, {
+    jsError: pageerrorWriteStream,
+    jsLog: consoleWriteStream,
+    networkLog: requestfinishedWriteStream,
+  });
+  page.on('requestfinished', (chunk) => contentAnalyze('requestfinished', chunk, requestfinishedWriteStream));
+  page.on('console', (chunk) => contentAnalyze('console', chunk, requestfinishedWriteStream));
+  page.on('pageerror', (chunk) => contentAnalyze('pageerror', chunk, requestfinishedWriteStream));
+};
+
+export const stopLogRecorder = async (key: string) => {
+  const log = logs.getLog(key);
+  const { jsError, jsLog, networkLog } = log;
+  if (!(typeof jsError === 'string')) {
+    jsError.close();
+  }
+  if (!(typeof jsLog === 'string')) {
+    jsLog.close();
+  }
+  if (!(typeof networkLog === 'string')) {
+    networkLog.close();
   }
 };
 

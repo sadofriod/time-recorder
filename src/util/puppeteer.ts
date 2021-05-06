@@ -1,14 +1,13 @@
 import * as puppeteer from 'puppeteer';
 import { ImageOption } from 'types';
-// import { spawn } from 'child_process';
-// import * as Xvfb from 'xvfb';
-import { BASE_PATH } from './constant';
+import { BASE_PATH, isDev } from './constant';
 import { CronJob } from 'cron';
 import { xvfbStart, xvfbStop } from './xvfb';
 import * as fs from 'fs';
-import { ffmpegStop, startCapture } from './ffmpeg';
-// import { startRecorder } from './log';
-import { startRecorder } from './ffmpeg';
+import { startRecorder, ffmpegStop } from './ffmpeg';
+import { startLogRecorder, stopLogRecorder } from './log';
+import task from '../util/task';
+import { fileUpload, updateTask } from '../rpc/api';
 
 const converntCookie = (cookie: any) => {
   const keys = Object.keys(cookie);
@@ -27,11 +26,16 @@ interface Options extends Omit<ImageOption, 'url'> {
   url: string;
 }
 
-export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, job: CronJob, date: string) => {
+export const openUrls = async (
+  options: Options,
+  cookies: puppeteer.SetCookie,
+  cookieString: string | undefined,
+  job: CronJob,
+  date: string
+) => {
   const { size, url, second } = options;
   const { width, height } = size;
   fs.mkdirSync(`${BASE_PATH}${date}`);
-
   try {
     const display = await xvfbStart(date, {
       width,
@@ -42,8 +46,6 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
     const browser = await puppeteer.launch({
       headless: false,
       executablePath: '/usr/bin/google-chrome',
-      // executablePath: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-      // executablePath: '/Applic',
       defaultViewport: null,
       args: [
         '--enable-usermedia-screen-capturing',
@@ -65,7 +67,6 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
       ],
     });
     const page = await browser.newPage();
-
     await page.setDefaultNavigationTimeout(0);
     await page.setCookie(...converntCookie(cookies));
     await page.setViewport({
@@ -74,32 +75,37 @@ export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, j
     });
 
     await page.goto(url);
-    page.waitForSelector('div');
-    await new Promise((r) => setTimeout(r, 60000 as number));
-    // startRecorder(date, page);
+    await page.waitForSelector('div');
+    startLogRecorder(date, page);
+    if (!isDev) {
+      await new Promise((r) => setTimeout(r, 60000 as number));
+    }
+    await updateTask({ id: task.getTask(date).id, status: 1 }, cookieString);
     startRecorder(date, display, {
       width,
       height,
-      // framerate: 30,
     });
     await page.setBypassCSP(true);
     await new Promise((r) => setTimeout(r, second as number));
 
     ffmpegStop(date);
+    stopLogRecorder(date);
+    await fileUpload(date, task.getTask(date).id, true, cookieString);
+    await fileUpload(date, task.getTask(date).id, false, cookieString);
     await browser.close();
     await xvfbStop(date);
+    await updateTask({ id: task.getTask(date).id, status: 9 }, cookieString);
     job.stop();
   } catch (error) {
     console.log('process error----', error);
-    // await browser.close();
     fs.rmdir(`${BASE_PATH}${date}`, { recursive: true }, (err) => {
       if (err) {
         throw err;
       }
-
       console.log(`${date} is deleted!`);
     });
     await xvfbStop(date);
+    await updateTask({ id: task.getTask(date).id, status: -1 }, cookieString);
     job.stop();
   }
 };

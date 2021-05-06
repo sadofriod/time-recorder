@@ -4,13 +4,16 @@ import { openUrls } from '../util/puppeteer';
 import { CronJob } from 'cron';
 import { timeConvert } from '../util/timeConvert';
 import * as uuid from 'uuid';
+import { isDev } from '../util/constant';
+import { createTask } from '../rpc/api';
+import task from '../util/task';
 const router = Router();
 // const tempSourceMap: any = {};
 
 export default router.post<any, any, ImageOption>('/recorder', async (req, res) => {
-  const { body, cookies } = req;
-  // const currentSec = new Date().getSeconds();
-  // const currentMin = new Date().getMinutes();
+  const { body, cookies, headers } = req;
+  const currentSec = new Date().getSeconds();
+  const currentMin = new Date().getMinutes();
   const { startTime, second } = body;
   const date = uuid.v4();
   // console.log(body);
@@ -19,12 +22,13 @@ export default router.post<any, any, ImageOption>('/recorder', async (req, res) 
   // };
   if (startTime && second) {
     const job = new CronJob(
-      timeConvert(startTime).join(' '),
-      // `${currentSec + 3 > 59 ? 5 : currentSec + 3} ${currentSec + 3 > 59 ? currentMin + 1 : currentMin} * * * *`,
+      !isDev
+        ? timeConvert(startTime).join(' ')
+        : `${currentSec + 3 > 59 ? 5 : currentSec + 3} ${currentSec + 3 > 59 ? currentMin + 1 : currentMin} * * * *`,
       function () {
-        const d = new Date();
-        console.log('At Ten Minutes:', d.toISOString());
-        openUrls(body, cookies, job, date);
+        // const d = new Date();
+        // console.log('At Ten Minutes:', d.toISOString());
+        openUrls(body, cookies, headers.cookie, job, date);
       },
       function () {
         console.log('done');
@@ -33,25 +37,24 @@ export default router.post<any, any, ImageOption>('/recorder', async (req, res) 
     console.log('After job instantiation');
     console.log('Create job at', new Date().toISOString());
     job.start();
-    res.json({
-      msg: 'Job created',
-      key: date,
-    });
+    try {
+      const result = await createTask({
+        key: date,
+        body: {
+          ...body,
+        },
+        cookie: headers.cookie,
+      });
+      if (result && result.id !== undefined) {
+        task.setTask(date, { id: result.id });
+      }
+      res.json(result);
+    } catch (error) {
+      res.send(error);
+    }
   } else {
     res.json({
       msg: 'error params',
     });
   }
-
-  try {
-    // const queueUrl =
-  } catch (error) {
-    console.log(error);
-    res.json({
-      msg: 'error',
-      detail: error,
-    });
-  }
-
-  // openUrls(body);
 });

@@ -3,12 +3,24 @@
 // ffmpeg -f image2 -i /home/ttwang/images/image%d.jpg  -vcodec libx264 -r 10  tt.mp4      指定输出帧率
 // -threads 2：以两个线程进行运行， 加快处理的速度。
 
+export const isDev = process.env.NODE_ENV === 'development';
+
+export const baseRPCUrl = !isDev ? 'http://ssjdv.jd.com' : 'http://test.listen.jd.com';
+
+export const UPLOAD_FILE = '/monitor/task/upload';
+
+export const CREATE_TASK = '/monitor/task/add';
+
+export const UPDATE_TASK = '/monitor/task/update';
+
+export const GET_TASKS = '/monitor/task/list';
+
 export const COMMAND = '';
 
-export const IMAGE_TEMP_DIR = '/Users/ashes/Desktop/back-end/jdv-listener/tempAsset/';
+// export const IMAGE_TEMP_DIR = '/Users/ashes/Desktop/back-end/jdv-listener/tempAsset/';
 
 // export const BASE_PATH = '/app/tempAsset/';
-export const BASE_PATH = '/home/admin/app/tempAsset/';
+export const BASE_PATH = isDev ? '/app/tempAsset/' : '/home/admin/app/tempAsset/';
 // export const BASE_PATH = '/media/psf/Home/Desktop/back-end/jdvlistener/tempAsset/';
 
 // export const BASE_PATH = '/Users/dushihua2/Desktop/back-and/jdvlistener/tempAsset';
@@ -23,5 +35,3 @@ export const NETWORK_ERROR_LOG_PATH = (date: number | string) => `${BASE_PATH}/$
 export const NETWORK_LOG_PATH = (date: number | string) => `${BASE_PATH}/${date}/network_access.log`;
 
 export const RESPONSE_LOG_PATH = (date: number | string) => `${BASE_PATH}/${date}/network_response.log`;
-
-export const isDev = true;

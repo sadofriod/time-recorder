@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cookie from 'cookie-parser';
 import recorder from './routes/recorder';
-import { BASE_PATH } from './util/constant';
+import { BASE_PATH, isDev } from './util/constant';
 
 const app = express();
 
@@ -26,7 +26,6 @@ app.all('*', function (req, res, next) {
 
 app.use(recorder);
 app.use(express.static(`${BASE_PATH}`));
-app.listen(80, '0.0.0.0', function () {
-  // const { } = listen;
-  console.log('server start on 8080');
+app.listen(isDev ? 8080 : 80, '0.0.0.0', function () {
+  console.log(`server start on ${isDev ? 8080 : 80}`);
 });
