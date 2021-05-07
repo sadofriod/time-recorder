@@ -88,13 +88,20 @@ export const openUrls = async (
     await page.setBypassCSP(true);
     await new Promise((r) => setTimeout(r, second as number));
 
-    ffmpegStop(date);
-    stopLogRecorder(date);
-    const video = await fileUpload(date, task.getTask(date).id, true, cookieString);
-    const log = await fileUpload(date, task.getTask(date).id, false, cookieString);
+    const isDone = await ffmpegStop(date);
+    await stopLogRecorder(date);
+    if (!isDone) {
+      throw '录制未完成';
+    }
+    const video: any = await fileUpload(date, task.getTask(date).id, true, cookieString);
+    const log: any = await fileUpload(date, task.getTask(date).id, false, cookieString);
     console.log(log, video);
 
-    await updateTask({ id: task.getTask(date).id, status: 9 }, cookieString);
+    await updateTask(
+      { id: task.getTask(date).id, status: 9, videoUrl: video.downloadUrl, logUrl: log.downloadUrl },
+      cookieString
+    );
+    await new Promise((r) => setTimeout(r, 3000 as number));
     await browser.close();
     await xvfbStop(date);
     job.stop();

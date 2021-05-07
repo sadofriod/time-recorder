@@ -97,18 +97,19 @@ export const updateTask = (data: Partial<TaskItem>, cookie: any) => {
 export const fileUpload = (key: string, id: number, isVideo: boolean, cookie: any) => {
   return new Promise((res, rej) => {
     const formData = {
-      id,
+      taskId: id,
       fileType: isVideo ? 1 : 0,
       file: isVideo
         ? fs.createReadStream(`${BASE_PATH}${key}/screen.webm`)
         : fs.createReadStream(`${BASE_PATH}${key}/network_access.log`),
     };
 
-    // formData.file.on('end', () => {
-    //   console.log('trigger');
-
-    // });
+    formData.file.close();
+    // formData.file.on('close', () => {
+    // console.log('trigger');
     const r = request.post({ url: `${baseRPCUrl}${UPLOAD_FILE}`, formData }, (err, response, body) => {
+      // console.log('file upload reqpust header:  ', response.request.headers);
+
       if (err) {
         rej(err);
       } else {
@@ -118,11 +119,20 @@ export const fileUpload = (key: string, id: number, isVideo: boolean, cookie: an
         if (code === 200) {
           res(data);
         } else {
-          rej(`文件${key}/${isVideo ? 'screen.webm' : 'network_access.log'}上传失败：${message}`);
+          rej(`文件  ${BASE_PATH}${key}/${isVideo ? 'screen.webm' : 'network_access.log'}  上传失败：\n${message}`);
         }
       }
     });
-
     r.setHeader('cookie', cookie);
+    r.setHeader('Content-Type', 'multipart/form-data; boundary=something');
+    // });
+
+    // const form = r.form();
+    // const file = isVideo
+    //   ? fs.createReadStream(`${BASE_PATH}${key}/screen.webm`)
+    //   : fs.createReadStream(`${BASE_PATH}${key}/network_access.log`);
+    // form.append('file', file);
+    // form.append('fileType', isVideo ? 1 : 0);
+    // form.append('id', id);
   });
 };
