@@ -1,4 +1,4 @@
-import { isDev, JS_ERROR_LOG_PATH, JS_LOG_PATH, NETWORK_LOG_PATH } from './constant';
+import { isDev, JS_ERROR_LOG_PATH, JS_LOG_PATH, NETWORK_LOG_PATH, NETWORK_SOURCE_PATH } from './constant';
 import * as fs from 'fs';
 import * as puppeteer from 'puppeteer';
 import { ConsoleMessage, PageEventObj, Request } from 'puppeteer';
@@ -42,7 +42,10 @@ const consoleAnalyze = (chunk: ConsoleMessage, stream: CustomStream) => {
 
 const networkAnalyze = async (chunk: Request, stream: CustomStream) => {
   const res = chunk.response();
-  if (res) {
+  if (!res) {
+    return;
+  }
+  if (chunk.resourceType() === 'xhr') {
     try {
       const json = (await res.json()) || 'no response';
       sumContent(stream, JSON.stringify(json));
@@ -50,6 +53,9 @@ const networkAnalyze = async (chunk: Request, stream: CustomStream) => {
       const text = await res.text();
       sumContent(stream, text);
     }
+  } else {
+    const text = await res.text();
+    sumContent(stream, text);
   }
 };
 const errorAnalyze = (chunk: Error, stream: CustomStream) => {
@@ -71,25 +77,34 @@ const contentAnalyze = (type: keyof PageEventObj, chunk: ConsoleMessage | Reques
 
 export const startLogRecorder = async (key: string, page: puppeteer.Page) => {
   const pageerrorWriteStream = isDev
-    ? fs.createWriteStream(JS_ERROR_LOG_PATH(key), { flags: 'a', autoClose: false })
+    ? fs.createWriteStream(JS_ERROR_LOG_PATH(key), { flags: 'a', autoClose: false, encoding: 'utf-8' })
     : '';
   const requestfinishedWriteStream = isDev
-    ? fs.createWriteStream(NETWORK_LOG_PATH(key), { flags: 'a', autoClose: false })
+    ? fs.createWriteStream(NETWORK_LOG_PATH(key), { flags: 'a', autoClose: false, encoding: 'utf-8' })
     : '';
-  const consoleWriteStream = isDev ? fs.createWriteStream(JS_LOG_PATH(key), { flags: 'a', autoClose: false }) : '';
+  const consoleWriteStream = isDev
+    ? fs.createWriteStream(JS_LOG_PATH(key), { flags: 'a', autoClose: false, encoding: 'utf-8' })
+    : '';
+
+  const sourceWriteStream = isDev
+    ? fs.createWriteStream(NETWORK_SOURCE_PATH(key), { flags: 'a', autoClose: false, encoding: 'utf-8' })
+    : '';
+
   logs.setLog<fs.WriteStream>(key, {
     jsError: pageerrorWriteStream,
     jsLog: consoleWriteStream,
     networkLog: requestfinishedWriteStream,
   });
   page.on('requestfinished', (chunk) => contentAnalyze('requestfinished', chunk, requestfinishedWriteStream));
+  page.on('requestfinished', (chunk) => contentAnalyze('requestfinished', chunk, sourceWriteStream));
   page.on('console', (chunk) => contentAnalyze('console', chunk, requestfinishedWriteStream));
   page.on('pageerror', (chunk) => contentAnalyze('pageerror', chunk, requestfinishedWriteStream));
 };
 
-export const stopLogRecorder = async (key: string) => {
+export const stopLogRecorder = async (key: string, page: puppeteer.Page) => {
   const log = logs.getLog(key);
   const { jsError, jsLog, networkLog } = log;
+  page.removeAllListeners();
   if (!(typeof jsError === 'string')) {
     jsError.close();
   }

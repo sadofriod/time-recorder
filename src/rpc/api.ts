@@ -27,6 +27,7 @@ export const createTask = (data: { key: string; body: Partial<TaskItem>; cookie:
     videoUrl: '',
     logUrl: '',
   };
+  console.log(data.cookie);
 
   return new Promise<Partial<TaskItem>>((res, rej) => {
     const r = request;
@@ -47,27 +48,6 @@ export const createTask = (data: { key: string; body: Partial<TaskItem>; cookie:
       }
     })
       .json(params)
-      .setHeader('cookie', data.cookie);
-  });
-};
-
-export const getTasks = (data: { status: TaskItem['status']; pageNo: number; pageSize: number; cookie: any }) => {
-  return new Promise((res, rej) => {
-    const r = request;
-    // r.cookie && r.cookie(data.cookie);
-    r.post(`${baseRPCUrl}${GET_TASKS}`, (err, response, body) => {
-      if (err) {
-        rej(response);
-      } else {
-        const { data, message, code } = body;
-        if (code === 200) {
-          res(data);
-        } else {
-          rej(`获取任务失败:${message}`);
-        }
-      }
-    })
-      .json(data)
       .setHeader('cookie', data.cookie);
   });
 };

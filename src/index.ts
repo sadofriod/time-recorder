@@ -3,6 +3,7 @@ import * as bodyParser from 'body-parser';
 import * as cookie from 'cookie-parser';
 import recorder from './routes/recorder';
 import { BASE_PATH, isDev } from './util/constant';
+import _delete from './routes/delete';
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.all('*', function (req, res, next) {
 });
 
 app.use(recorder);
+app.use(_delete);
 app.use(express.static(`${BASE_PATH}`));
 app.listen(isDev ? 8080 : 80, '0.0.0.0', function () {
   console.log(`server start on ${isDev ? 8080 : 80}`);

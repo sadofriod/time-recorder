@@ -5,7 +5,9 @@
 
 export const isDev = process.env.NODE_ENV === 'development';
 
-export const baseRPCUrl = 'http://ssjdv.jd.com';
+export const baseRPCUrl = 'https://test-jdvison.jd.com';
+
+export const downloadBase = 'http://test.listener.jd.com';
 // export const baseRPCUrl = !isDev ? 'http://ssjdv.jd.com' : 'http://test.listen.jd.com';
 
 export const UPLOAD_FILE = '/monitor/task/upload';
@@ -34,5 +36,7 @@ export const JS_LOG_PATH = (date: number | string) => `${BASE_PATH}/${date}/js_a
 export const NETWORK_ERROR_LOG_PATH = (date: number | string) => `${BASE_PATH}/${date}/network_error.log`;
 
 export const NETWORK_LOG_PATH = (date: number | string) => `${BASE_PATH}/${date}/network_access.log`;
+
+export const NETWORK_SOURCE_PATH = (date: number | string) => `${BASE_PATH}/${date}/network_source.log`;
 
 export const RESPONSE_LOG_PATH = (date: number | string) => `${BASE_PATH}/${date}/network_response.log`;

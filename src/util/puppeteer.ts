@@ -1,13 +1,13 @@
 import * as puppeteer from 'puppeteer';
 import { ImageOption } from 'types';
-import { baseRPCUrl, BASE_PATH, isDev } from './constant';
+import { BASE_PATH, isDev } from './constant';
 import { CronJob } from 'cron';
 import { xvfbStart, xvfbStop } from './xvfb';
 import * as fs from 'fs';
 import { startRecorder, ffmpegStop } from './ffmpeg';
 import { startLogRecorder, stopLogRecorder } from './log';
 import task from '../util/task';
-import { fileUpload, updateTask } from '../rpc/api';
+import { updateTask } from '../rpc/api';
 
 const converntCookie = (cookie: any) => {
   const keys = Object.keys(cookie);
@@ -89,32 +89,27 @@ export const openUrls = async (
     await new Promise((r) => setTimeout(r, second as number));
 
     const isDone = await ffmpegStop(date);
-    await stopLogRecorder(date);
+    await stopLogRecorder(date, page);
     if (!isDone) {
       throw '录制未完成';
     }
-    const video: any = await fileUpload(date, task.getTask(date).id, true, cookieString);
-    const log: any = await fileUpload(date, task.getTask(date).id, false, cookieString);
+    // const video: any = await fileUpload(date, task.getTask(date).id, true, cookieString);
+    // const log: any = await fileUpload(date, task.getTask(date).id, false, cookieString);
     // console.log(log, video);
 
     await updateTask(
       {
         id: task.getTask(date).id,
         status: 9,
-        videoUrl: `${baseRPCUrl}${video.downloadUrl}`,
-        logUrl: `${baseRPCUrl}${log.downloadUrl}`,
+        videoUrl: `${date}/screen.webm`,
+        logUrl: `${date}/network_access.log`,
       },
       cookieString
     );
     await new Promise((r) => setTimeout(r, 3000 as number));
     await browser.close();
     await xvfbStop(date);
-    fs.rmdir(`${BASE_PATH}${date}`, { recursive: true }, (err) => {
-      if (err) {
-        throw err;
-      }
-      console.log(`${date} is deleted!`);
-    });
+
     job.stop();
   } catch (error) {
     console.log('process error----', error);

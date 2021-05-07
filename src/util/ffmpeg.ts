@@ -1,5 +1,5 @@
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
-import { fileUpload } from '../rpc/api';
+// import { fileUpload } from '../rpc/api';
 import { BASE_PATH } from './constant';
 
 // import * as util from 'util';
