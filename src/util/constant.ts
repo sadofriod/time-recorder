@@ -5,7 +5,8 @@
 
 export const isDev = process.env.NODE_ENV === 'development';
 
-export const baseRPCUrl = !isDev ? 'http://ssjdv.jd.com' : 'http://test.listen.jd.com';
+export const baseRPCUrl = 'http://ssjdv.jd.com';
+// export const baseRPCUrl = !isDev ? 'http://ssjdv.jd.com' : 'http://test.listen.jd.com';
 
 export const UPLOAD_FILE = '/monitor/task/upload';
 

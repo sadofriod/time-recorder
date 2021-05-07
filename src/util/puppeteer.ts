@@ -1,6 +1,6 @@
 import * as puppeteer from 'puppeteer';
 import { ImageOption } from 'types';
-import { BASE_PATH, isDev } from './constant';
+import { baseRPCUrl, BASE_PATH, isDev } from './constant';
 import { CronJob } from 'cron';
 import { xvfbStart, xvfbStop } from './xvfb';
 import * as fs from 'fs';
@@ -95,15 +95,26 @@ export const openUrls = async (
     }
     const video: any = await fileUpload(date, task.getTask(date).id, true, cookieString);
     const log: any = await fileUpload(date, task.getTask(date).id, false, cookieString);
-    console.log(log, video);
+    // console.log(log, video);
 
     await updateTask(
-      { id: task.getTask(date).id, status: 9, videoUrl: video.downloadUrl, logUrl: log.downloadUrl },
+      {
+        id: task.getTask(date).id,
+        status: 9,
+        videoUrl: `${baseRPCUrl}${video.downloadUrl}`,
+        logUrl: `${baseRPCUrl}${log.downloadUrl}`,
+      },
       cookieString
     );
     await new Promise((r) => setTimeout(r, 3000 as number));
     await browser.close();
     await xvfbStop(date);
+    fs.rmdir(`${BASE_PATH}${date}`, { recursive: true }, (err) => {
+      if (err) {
+        throw err;
+      }
+      console.log(`${date} is deleted!`);
+    });
     job.stop();
   } catch (error) {
     console.log('process error----', error);

@@ -30,14 +30,14 @@ export const createTask = (data: { key: string; body: Partial<TaskItem>; cookie:
 
   return new Promise<Partial<TaskItem>>((res, rej) => {
     const r = request;
-    // r;
-    // r.cookie && r.cookie(data.cookie);
     r.post(`${baseRPCUrl}${CREATE_TASK}`, (err, response, body) => {
       if (err) {
         console.log(err);
 
         rej(response);
       } else {
+        console.log(body);
+
         const { data, code, message } = body;
         if (code === 200) {
           res(data);
@@ -94,22 +94,37 @@ export const updateTask = (data: Partial<TaskItem>, cookie: any) => {
   });
 };
 
-export const fileUpload = (key: string, id: number, isVideo: boolean, cookie: any) => {
-  return new Promise((res, rej) => {
+export const fileUpload = async (key: string, id: number, isVideo: boolean, cookie: any) => {
+  const path = isVideo ? `${BASE_PATH}${key}/screen.webm` : `${BASE_PATH}${key}/network_access.log`;
+  // const file = fs.readFileSync(path);
+  // const file = fs.createReadStream(path);
+  console.log('soon upload');
+  // const chunks: any[] = [];
+  const minetype = isVideo ? 'video/webm' : 'text/plain;charset=UTF-8';
+  const filename = isVideo ? 'screen.webm' : 'network_access.log';
+  // await new Promise((res) =>
+  //   file
+  //     .on('data', (chunk) => {
+  //       chunks.push(chunk);
+  //     })
+  //     .once('end', res)
+  // );
+  return await new Promise((res, rej) => {
     const formData = {
       taskId: id,
       fileType: isVideo ? 1 : 0,
-      file: isVideo
-        ? fs.createReadStream(`${BASE_PATH}${key}/screen.webm`)
-        : fs.createReadStream(`${BASE_PATH}${key}/network_access.log`),
+      file: {
+        value: fs.createReadStream(path),
+        // value: Buffer.from(chunks),
+        options: {
+          filename: filename,
+          contentType: minetype,
+        },
+      },
     };
+    console.log('read done');
 
-    formData.file.close();
-    // formData.file.on('close', () => {
-    // console.log('trigger');
     const r = request.post({ url: `${baseRPCUrl}${UPLOAD_FILE}`, formData }, (err, response, body) => {
-      // console.log('file upload reqpust header:  ', response.request.headers);
-
       if (err) {
         rej(err);
       } else {
@@ -123,16 +138,17 @@ export const fileUpload = (key: string, id: number, isVideo: boolean, cookie: an
         }
       }
     });
-    r.setHeader('cookie', cookie);
-    r.setHeader('Content-Type', 'multipart/form-data; boundary=something');
-    // });
-
     // const form = r.form();
-    // const file = isVideo
-    //   ? fs.createReadStream(`${BASE_PATH}${key}/screen.webm`)
-    //   : fs.createReadStream(`${BASE_PATH}${key}/network_access.log`);
+    // form.append('taskId', id);
     // form.append('file', file);
     // form.append('fileType', isVideo ? 1 : 0);
-    // form.append('id', id);
+    r.setHeader('cookie', cookie);
+    r.setHeader('Content-Type', 'multipart/form-data; boundary=something');
   });
+  // const formData = new Promise((res, rej) => {
+  //   const path = isVideo ? `${BASE_PATH}${key}/screen.webm` : `${BASE_PATH}${key}/network_access.log`;
+  //   const stream = fs.createReadStream(path);
+  //   const chunks = [];
+  //   stream.on('data',(chunk))
+  // });
 };
