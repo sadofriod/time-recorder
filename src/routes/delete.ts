@@ -8,7 +8,7 @@ export default router.get('/delete', (req, res) => {
   const { params } = req;
   const key = params.key;
   fs.rmdir(`${BASE_PATH}${key}`, { recursive: true }, (err) => {
-    cron.getCache(key);
+    cron.deleteCache(key);
     if (err) {
       res.json({
         code: 500,
