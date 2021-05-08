@@ -40,7 +40,7 @@ export const createTask = (data: { key: string; body: Partial<TaskItem>; cookie:
 
         const { data, code, message } = body;
         if (code === 200) {
-          res({ ...data, key: data.body.key });
+          res({ ...data, key: data.key });
         } else {
           rej(`创建任务失败${message}`);
         }
