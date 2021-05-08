@@ -6,9 +6,10 @@ interface CacheType {
 
 class CronCache {
   private cache: CacheType = {};
-
+  private cacheCount = 0;
   setCache = (key: string, value: CronJob) => {
     this.cache[key] = value;
+    this.cacheCount++;
     return;
   };
 
@@ -18,8 +19,10 @@ class CronCache {
 
   deleteCache = (key: string) => {
     delete this.cache[key];
+    this.cacheCount--;
   };
 
+  getCacheCount = () => this.cacheCount;
   getCacheMap = () => this.cache;
 }
 
