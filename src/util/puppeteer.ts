@@ -101,8 +101,8 @@ export const openUrls = async (
       {
         id: task.getTask(date).id,
         status: 9,
-        videoUrl: `${date}/screen.webm`,
-        logUrl: `${date}/network_access.log`,
+        // videoUrl: `${date}/screen.webm`,
+        // logUrl: `${date}/network_access.log`,
       },
       cookieString
     );

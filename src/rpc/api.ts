@@ -1,5 +1,5 @@
 import * as request from 'request';
-import { baseRPCUrl, UPDATE_TASK, UPLOAD_FILE, GET_TASKS, BASE_PATH, CREATE_TASK, isDev } from '../util/constant';
+import { baseRPCUrl, UPDATE_TASK, UPLOAD_FILE, BASE_PATH, CREATE_TASK } from '../util/constant';
 import * as fs from 'fs';
 
 interface TaskItem {
@@ -15,6 +15,7 @@ interface TaskItem {
     width: number;
     height: number;
   };
+  key: string;
   startTime: number;
   status: 0 | 1 | 9 | -1;
   url: string; //页面连接
@@ -41,7 +42,7 @@ export const createTask = (data: { key: string; body: Partial<TaskItem>; cookie:
 
         const { data, code, message } = body;
         if (code === 200) {
-          res(data);
+          res({ ...data, key: '' });
         } else {
           rej(`创建任务失败${message}`);
         }
