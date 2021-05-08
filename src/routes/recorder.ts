@@ -3,7 +3,7 @@ import { ImageOption } from 'types';
 import { openUrls } from '../util/puppeteer';
 import { CronJob } from 'cron';
 import { timeConvert } from '../util/timeConvert';
-import * as uuid from 'uuid';
+// import * as uuid from 'uuid';
 import { isDev } from '../util/constant';
 import { createTask } from '../rpc/api';
 import task from '../util/task';
