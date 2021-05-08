@@ -25,8 +25,6 @@ interface TaskItem {
 export const createTask = (data: { key: string; body: Partial<TaskItem>; cookie: any }) => {
   const params = {
     ...data.body,
-    videoUrl: '',
-    logUrl: '',
   };
   console.log(data.cookie);
 
@@ -42,7 +40,7 @@ export const createTask = (data: { key: string; body: Partial<TaskItem>; cookie:
 
         const { data, code, message } = body;
         if (code === 200) {
-          res({ ...data, key: '' });
+          res({ ...data, key: data.body.key });
         } else {
           rej(`创建任务失败${message}`);
         }
