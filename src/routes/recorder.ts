@@ -7,6 +7,8 @@ import * as uuid from 'uuid';
 import { isDev } from '../util/constant';
 import { createTask } from '../rpc/api';
 import task from '../util/task';
+import cronCache from '../util/cron';
+
 const router = Router();
 // const tempSourceMap: any = {};
 
@@ -31,11 +33,13 @@ export default router.post<any, any, ImageOption>('/recorder', async (req, res) 
         openUrls(body, cookies, headers.cookie, job, date);
       },
       function () {
+        cronCache.deleteCache(date);
         console.log('done');
       }
     );
     console.log('After job instantiation');
     console.log('Create job at', new Date().toISOString());
+    cronCache.setCache(date, job);
     job.start();
     try {
       const result = await createTask({
