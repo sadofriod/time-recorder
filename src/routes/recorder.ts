@@ -16,8 +16,8 @@ export default router.post<any, any, ImageOption>('/recorder', async (req, res) 
   const { body, cookies, headers } = req;
   const currentSec = new Date().getSeconds();
   const currentMin = new Date().getMinutes();
-  const { startTime, second } = body;
-  const date = uuid.v4();
+  const { startTime, second, key } = body;
+  // const date = uuid.v4();
   // console.log(body);
   // const setSourceMap = (key: string, value: { video: string; log: string }) => {
   //   tempSourceMap[key] = value;
@@ -30,27 +30,27 @@ export default router.post<any, any, ImageOption>('/recorder', async (req, res) 
       function () {
         // const d = new Date();
         // console.log('At Ten Minutes:', d.toISOString());
-        openUrls(body, cookies, headers.cookie, job, date);
+        openUrls(body, cookies, headers.cookie, job, key);
       },
       function () {
-        cronCache.deleteCache(date);
+        cronCache.deleteCache(key);
         console.log('done');
       }
     );
     console.log('After job instantiation');
     console.log('Create job at', new Date().toISOString());
-    cronCache.setCache(date, job);
+    cronCache.setCache(key, job);
     job.start();
     try {
       const result = await createTask({
-        key: date,
+        key: key,
         body: {
           ...body,
         },
         cookie: headers.cookie,
       });
       if (result && result.id !== undefined) {
-        task.setTask(date, { id: result.id });
+        task.setTask(key, { id: result.id });
       }
       res.json(result);
     } catch (error) {
