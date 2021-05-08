@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { Router } from 'express';
 import { BASE_PATH } from '../util/constant';
-import cron from 'util/cron';
+import cron from '../util/cron';
 const router = Router();
 
 export default router.get('/delete', (req, res) => {
