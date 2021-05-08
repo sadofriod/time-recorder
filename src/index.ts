@@ -4,6 +4,7 @@ import * as cookie from 'cookie-parser';
 import recorder from './routes/recorder';
 import { BASE_PATH, isDev } from './util/constant';
 import _delete from './routes/delete';
+import searchCornCount from './routes/processLock';
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.all('*', function (req, res, next) {
 });
 
 app.use(recorder);
+app.use(searchCornCount);
 app.use(_delete);
 app.use(express.static(`${BASE_PATH}`));
 app.listen(isDev ? 8080 : 80, '0.0.0.0', function () {
