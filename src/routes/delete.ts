@@ -13,7 +13,7 @@ export default router.get('/delete', (req, res) => {
       res.json({
         code: 500,
         data: err,
-        message: 'success',
+        message: '删除失败',
       });
       throw err;
     }
