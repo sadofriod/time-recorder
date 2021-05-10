@@ -51,6 +51,8 @@ const networkAnalyze = async (chunk: Request, stream: CustomStream) => {
       sumContent(stream, JSON.stringify(json));
     } catch (error) {
       const text = await res.text();
+      console.log(text);
+
       sumContent(stream, text);
     }
   } else {
@@ -76,19 +78,11 @@ const contentAnalyze = (type: keyof PageEventObj, chunk: ConsoleMessage | Reques
 };
 
 export const startLogRecorder = async (key: string, page: puppeteer.Page) => {
-  const pageerrorWriteStream = isDev
-    ? fs.createWriteStream(JS_ERROR_LOG_PATH(key), { flags: 'a', autoClose: false, encoding: 'utf-8' })
-    : '';
-  const requestfinishedWriteStream = isDev
-    ? fs.createWriteStream(NETWORK_LOG_PATH(key), { flags: 'a', autoClose: false, encoding: 'utf-8' })
-    : '';
-  const consoleWriteStream = isDev
-    ? fs.createWriteStream(JS_LOG_PATH(key), { flags: 'a', autoClose: false, encoding: 'utf-8' })
-    : '';
+  const pageerrorWriteStream = fs.createWriteStream(JS_ERROR_LOG_PATH(key), { flags: 'a' });
+  const requestfinishedWriteStream = fs.createWriteStream(NETWORK_LOG_PATH(key), { flags: 'a' });
+  const consoleWriteStream = fs.createWriteStream(JS_LOG_PATH(key), { flags: 'a' });
 
-  const sourceWriteStream = isDev
-    ? fs.createWriteStream(NETWORK_SOURCE_PATH(key), { flags: 'a', autoClose: false, encoding: 'utf-8' })
-    : '';
+  const sourceWriteStream = fs.createWriteStream(NETWORK_SOURCE_PATH(key), { flags: 'a' });
 
   logs.setLog<fs.WriteStream>(key, {
     jsError: pageerrorWriteStream,
