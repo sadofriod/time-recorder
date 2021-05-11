@@ -33,7 +33,7 @@ export const openUrls = async (
   job: CronJob,
   date: string
 ) => {
-  const { size, url, second } = options;
+  const { size, url, second, startTime } = options;
   const { width, height } = size;
   fs.mkdirSync(`${BASE_PATH}${date}`);
   try {
@@ -77,7 +77,7 @@ export const openUrls = async (
     await page.goto(url);
     await page.waitForSelector('div');
     startLogRecorder(date, page);
-    if (!isDev) {
+    if (startTime && !isDev && Date.now() - startTime > 0) {
       await new Promise((r) => setTimeout(r, 60000 as number));
     }
     await updateTask({ id: task.getTask(date).id, status: 1 }, cookieString);
