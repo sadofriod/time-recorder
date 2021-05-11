@@ -5,6 +5,6 @@ ADD ./ /home/admin/app
 WORKDIR /home/admin/app
 ENTRYPOINT /usr/sbin/sshd && \
 mkdir tempAsset && \
-node bundle/index.js 
+node index.js 
 
 EXPOSE 22 80 443
