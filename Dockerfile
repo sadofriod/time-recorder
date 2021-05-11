@@ -4,6 +4,7 @@ FROM base_image;
 ADD ./ /home/admin/app
 WORKDIR /home/admin/app
 ENTRYPOINT /usr/sbin/sshd && \
+ls && \
 mkdir tempAsset && \
 node dist/index.js 
 
