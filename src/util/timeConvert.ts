@@ -6,5 +6,5 @@ export const timeConvert = (startTime: number) => {
   const sMin = sDate.getMinutes();
   const sSec = sDate.getSeconds();
 
-  return [sSec, sMin - 1, sHour, sDay, sMounth, '*'];
+  return [sSec, Date.now() - startTime >= 60000 ? sMin - 1 : sMin, sHour, sDay, sMounth, '*'];
 };
