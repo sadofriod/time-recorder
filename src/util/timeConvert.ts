@@ -5,6 +5,9 @@ export const timeConvert = (startTime: number) => {
   const sHour = sDate.getHours();
   const sMin = sDate.getMinutes();
   const sSec = sDate.getSeconds();
+  const realMin = Date.now() - startTime >= 60000 ? sMin - 1 : sMin;
+  const calcMin = realMin < 0 ? 59 : realMin;
+  console.log('任务运行的分钟', calcMin);
 
-  return [sSec, Date.now() - startTime >= 60000 ? sMin - 1 : sMin, sHour, sDay, sMounth, '*'];
+  return [sSec, calcMin, sHour, sDay, sMounth, '*'];
 };

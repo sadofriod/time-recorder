@@ -26,7 +26,6 @@ export const createTask = (data: { key: string; body: Partial<TaskItem>; cookie:
   const params = {
     ...data.body,
   };
-  console.log(data.cookie);
 
   return new Promise<Partial<TaskItem>>((res, rej) => {
     const r = request;
@@ -36,8 +35,6 @@ export const createTask = (data: { key: string; body: Partial<TaskItem>; cookie:
 
         rej(response);
       } else {
-        console.log(body);
-
         const { data, code, message } = body;
         if (code === 200) {
           res({ ...data, key: data.key });
@@ -61,7 +58,6 @@ export const updateTask = (data: Partial<TaskItem>, cookie: any) => {
       } else {
         const { data, message, code } = body;
         if (code === 200) {
-          console.log(data);
           res(data);
         } else {
           rej(`组件更新失败:${message}`);

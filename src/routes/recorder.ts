@@ -17,12 +17,9 @@ export default router.post<any, any, ImageOption>('/recorder', async (req, res) 
   const currentSec = new Date().getSeconds();
   const currentMin = new Date().getMinutes();
   const { startTime, second, key } = body;
-  // const date = uuid.v4();
-  // console.log(body);
-  // const setSourceMap = (key: string, value: { video: string; log: string }) => {
-  //   tempSourceMap[key] = value;
-  // };
+
   if (startTime && second) {
+    console.log(`系统运行环境为 ${isDev ? '测试' : '开发'}`);
     const job = new CronJob(
       isDev
         ? timeConvert(startTime).join(' ')
