@@ -81,7 +81,7 @@ const websocketAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
   cdp.on('Network.webSocketClosed', function (params) {
     // console.log(`WebSocket 连接关闭`);
     log.websocket.push({
-      url: params.url,
+      url: params.url || 'websocket closed',
       headers: 'websocket',
       endTime: new Date().toTimeString(),
       postData: 'close',
@@ -92,7 +92,7 @@ const websocketAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
   cdp.on('Network.webSocketFrameError', function (params) {
     // console.log(`WebSocket error`, params);
     log.websocket.push({
-      url: params.url,
+      url: params.url || 'websocket error',
       headers: 'websocket',
       endTime: new Date().toTimeString(),
       postData: 'error',
@@ -101,9 +101,9 @@ const websocketAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
     });
   });
   cdp.on('Network.webSocketCreated', (data) => {
-    console.log('trigger websocket create', data);
+    // console.log('trigger websocket create', data);
     log.websocket.push({
-      url: data.url,
+      url: data.url || 'websocket created',
       headers: 'websocket',
       endTime: new Date().toTimeString(),
       postData: 'create',
@@ -112,9 +112,9 @@ const websocketAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
     });
   });
   cdp.on('Network.webSocketFrameReceived', (data) => {
-    console.log('trigger websocket', data);
+    // console.log('trigger websocket', data);
     log.websocket.push({
-      url: data.url,
+      url: data.url || 'websocket received',
       headers: 'websocket',
       endTime: new Date().toTimeString(),
       postData: 'create',
@@ -145,10 +145,11 @@ export const stopLogRecorder = async (key: string, page: puppeteer.Page) => {
   wb.SheetNames.push('websocket');
   const httpWS = xlsx.utils.json_to_sheet(http);
   const resourceWS = xlsx.utils.json_to_sheet(resource);
+  const websocketWS = xlsx.utils.json_to_sheet(websocket);
   // wb.Sheets['request'];
   wb.Sheets['http'] = httpWS;
   wb.Sheets['resource'] = resourceWS;
-  wb.Sheets['websocket'] = websocket;
+  wb.Sheets['websocket'] = websocketWS;
   xlsx.writeFile(wb, `${BASE_PATH}${key}/log.xlsx`);
   page.removeAllListeners();
   // if (!(typeof jsError === 'string')) {

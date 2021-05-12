@@ -24,7 +24,7 @@ export default router.post<any, any, ImageOption>('/recorder', async (req, res) 
   // };
   if (startTime && second) {
     const job = new CronJob(
-      !isDev
+      isDev
         ? timeConvert(startTime).join(' ')
         : `${currentSec + 3 > 59 ? 5 : currentSec + 3} ${currentSec + 3 > 59 ? currentMin + 1 : currentMin} * * * *`,
       function () {
