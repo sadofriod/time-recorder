@@ -21,7 +21,7 @@ export default router.post<any, any, ImageOption>('/recorder', async (req, res) 
   if (startTime && second) {
     console.log(`系统运行环境为 ${isDev ? '测试' : '开发'}`);
     const job = new CronJob(
-      isDev
+      !isDev
         ? timeConvert(startTime).join(' ')
         : `${currentSec + 3 > 59 ? 5 : currentSec + 3} ${currentSec + 3 > 59 ? currentMin + 1 : currentMin} * * * *`,
       function () {

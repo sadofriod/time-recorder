@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import { startRecorder, ffmpegStop } from './ffmpeg';
 import { startLogRecorder, stopLogRecorder } from './log';
 import task from '../util/task';
-import { fileUpload, updateTask } from '../rpc/api';
+import { updateTask } from '../rpc/api';
 
 const converntCookie = (cookie: any) => {
   const keys = Object.keys(cookie);
@@ -93,9 +93,9 @@ export const openUrls = async (
     if (!isDone) {
       throw '录制未完成';
     }
-    const video: any = await fileUpload(date, task.getTask(date).id, true, cookieString);
+    // const video: any = await fileUpload(task.getTask(date).id, true, cookieString);
     // const log: any = await fileUpload(date, task.getTask(date).id, false, cookieString);
-    console.log(video);
+    // console.log(video);
 
     await updateTask(
       {
