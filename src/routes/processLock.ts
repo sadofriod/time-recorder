@@ -6,7 +6,7 @@ const route = Router();
 export default route.get('/searchCornCount', (req, res) => {
   res.json({
     code: 200,
-    message: 'success',
+    message: 'SUCCESS',
     data: cronCache.getCacheCount(),
   });
 });

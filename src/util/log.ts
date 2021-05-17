@@ -85,7 +85,7 @@ const websocketAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
       headers: 'websocket',
       endTime: new Date().toTimeString(),
       postData: 'close',
-      response: 'close success',
+      response: 'close SUCCESS',
       status: 200,
     });
   });

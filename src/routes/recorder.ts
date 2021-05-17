@@ -49,13 +49,17 @@ export default router.post<any, any, ImageOption>('/recorder', async (req, res) 
       if (result && result.id !== undefined) {
         task.setTask(key, { id: result.id });
       }
-      res.json(result);
+      res.json({
+        code: 200,
+        message: 'SUCCESS'
+      });
     } catch (error) {
       res.send(error);
     }
   } else {
     res.json({
-      msg: 'error params',
+      code: 500,
+      message: '创建任务时录制系统内部错误'
     });
   }
 });

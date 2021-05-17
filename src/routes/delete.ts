@@ -19,7 +19,7 @@ export default router.get('/delete', (req, res) => {
     }
     res.json({
       code: 200,
-      message: 'success',
+      message: 'SUCCESS',
     });
   });
 });
