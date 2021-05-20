@@ -75,6 +75,7 @@ const httpAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
 
 const websocketAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
   const cdp = await page.target().createCDPSession();
+  const date = new Date();
   await cdp.send('Network.enable');
   // await cdp.send('Page.enable');
 
@@ -83,7 +84,7 @@ const websocketAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
     log.websocket.push({
       url: params.url || 'websocket closed',
       headers: 'websocket',
-      endTime: new Date().toTimeString(),
+      endTime: `${date.toTimeString()}.${date.getMilliseconds()}`,
       postData: 'close',
       response: 'close SUCCESS',
       status: 200,
@@ -94,7 +95,7 @@ const websocketAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
     log.websocket.push({
       url: params.url || 'websocket error',
       headers: 'websocket',
-      endTime: new Date().toTimeString(),
+      endTime: `${date.toTimeString()}.${date.getMilliseconds()}`,
       postData: 'error',
       response: 'websocket error',
       status: 500,
@@ -105,7 +106,7 @@ const websocketAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
     log.websocket.push({
       url: data.url || 'websocket created',
       headers: 'websocket',
-      endTime: new Date().toTimeString(),
+      endTime: `${date.toTimeString()}.${date.getMilliseconds()}`,
       postData: 'create',
       response: 'websocket connected',
       status: 200,
@@ -116,7 +117,7 @@ const websocketAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
     log.websocket.push({
       url: data.url || 'websocket received',
       headers: 'websocket',
-      endTime: new Date().toTimeString(),
+      endTime: `${date.toTimeString()}.${date.getMilliseconds()}`,
       postData: 'create',
       response: data.response.payloadData,
       status: 200,
