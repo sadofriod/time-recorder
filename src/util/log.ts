@@ -75,12 +75,12 @@ const httpAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
 
 const websocketAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
   const cdp = await page.target().createCDPSession();
-  const date = new Date();
   await cdp.send('Network.enable');
   // await cdp.send('Page.enable');
 
   cdp.on('Network.webSocketClosed', function (params) {
     // console.log(`WebSocket 连接关闭`);
+    const date = new Date();
     log.websocket.push({
       url: params.url || 'websocket closed',
       headers: 'websocket',
@@ -92,6 +92,7 @@ const websocketAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
   });
   cdp.on('Network.webSocketFrameError', function (params) {
     // console.log(`WebSocket error`, params);
+    const date = new Date();
     log.websocket.push({
       url: params.url || 'websocket error',
       headers: 'websocket',
@@ -103,6 +104,7 @@ const websocketAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
   });
   cdp.on('Network.webSocketCreated', (data) => {
     // console.log('trigger websocket create', data);
+    const date = new Date();
     log.websocket.push({
       url: data.url || 'websocket created',
       headers: 'websocket',
@@ -114,6 +116,7 @@ const websocketAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
   });
   cdp.on('Network.webSocketFrameReceived', (data) => {
     // console.log('trigger websocket', data);
+    const date = new Date();
     log.websocket.push({
       url: data.url || 'websocket received',
       headers: 'websocket',
