@@ -23,10 +23,10 @@ export const COMMAND = '';
 // export const IMAGE_TEMP_DIR = '/Users/ashes/Desktop/back-end/jdv-listener/tempAsset/';
 
 // export const BASE_PATH = '/app/tempAsset/';
-// export const BASE_PATH = isDev ? '/app/tempAsset/' : '/home/admin/app/tempAsset/';
+export const BASE_PATH = isDev ? '/app/tempAsset/' : '/home/admin/app/tempAsset/';
 
 ///home/admin/obj-storage 对象存储
-export const BASE_PATH = isDev ? '/app/tempAsset/' : '/home/admin/obj-storage/';
+// export const BASE_PATH = isDev ? '/app/tempAsset/' : '/home/admin/obj-storage/';
 
 // export const BASE_PATH = '/media/psf/Home/Desktop/back-end/jdvlistener/tempAsset/';
 

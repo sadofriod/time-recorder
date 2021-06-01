@@ -51,7 +51,7 @@ export default router.post<any, any, ImageOption>('/recorder', async (req, res) 
       }
       res.json({
         code: 200,
-        message: 'SUCCESS'
+        message: 'SUCCESS',
       });
     } catch (error) {
       res.send(error);
@@ -59,7 +59,7 @@ export default router.post<any, any, ImageOption>('/recorder', async (req, res) 
   } else {
     res.json({
       code: 500,
-      message: '创建任务时录制系统内部错误'
+      message: '创建任务时录制系统内部错误',
     });
   }
 });

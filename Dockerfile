@@ -10,6 +10,7 @@ ADD ./ /home/admin/app
 WORKDIR /home/admin/app
 RUN npm install
 ENTRYPOINT /usr/sbin/sshd && \
+mkdir tempAsset && \
 bash /opt/hf_docker_install.sh && \
 npm run build && \
 node bundle/index.js 
