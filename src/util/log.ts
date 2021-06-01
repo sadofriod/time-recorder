@@ -13,7 +13,7 @@ interface XlsxRowData {
   headers: string;
   startTime?: string;
   endTime?: string;
-  response: string;
+  response?: string;
   spendTime?: number;
   postData?: string;
   status: number | string;
@@ -52,21 +52,64 @@ const httpAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
   page.on('requestfinished', async (req) => {
     const type = req.resourceType();
     if (type === 'xhr') {
+      // log.http.push({
+      //   headers: JSON.stringify(req.headers()),
+      //   url: req.url(),
+      //   endTime: req.response()?.headers().date || 'unknow',
+      //   postData: req.postData() || 'no post param',
+      //   response: (await req.response()?.text()) || 'no response content',
+      //   status: req.response()?.status() || 'no status',
+      // });
+      const specLogIndex = log.http.findIndex((item) => item.url === req.url());
+      if (specLogIndex !== -1) {
+        const specLog = log.http[specLogIndex];
+        specLog.endTime = req.response()?.headers().date || 'unknow';
+        specLog.response = (await req.response()?.text()) || 'no response content';
+      } else {
+        log.http.push({
+          headers: JSON.stringify(req.headers()),
+          url: req.url(),
+          endTime: req.response()?.headers().date || 'unknow',
+          postData: req.postData() || 'no post param',
+          response: (await req.response()?.text()) || 'no response content',
+          status: req.response()?.status() || 'no status',
+        });
+      }
+    } else {
+      const specLogIndex = log.resource.findIndex((item) => item.url === req.url());
+      if (specLogIndex !== -1) {
+        const specLog = log.resource[specLogIndex];
+        specLog.endTime = req.response()?.headers().date || 'unknow';
+        specLog.response = (await req.response()?.text()) || 'no response content';
+      } else {
+        log.resource.push({
+          headers: JSON.stringify(req.headers()),
+          url: req.url(),
+          endTime: req.response()?.headers().date || 'unknow',
+          postData: req.postData() || 'no post param',
+          response: (await req.response()?.text()) || 'no response content',
+          status: req.response()?.status() || 'no status',
+        });
+      }
+    }
+  });
+  page.on('request', async (req) => {
+    const type = req.resourceType();
+    const date = new Date();
+    if (type === 'xhr') {
       log.http.push({
         headers: JSON.stringify(req.headers()),
         url: req.url(),
-        endTime: req.response()?.headers().date || 'unknow',
+        startTime: `${date.toTimeString()}.${date.getMilliseconds()}`,
         postData: req.postData() || 'no post param',
-        response: (await req.response()?.text()) || 'no response content',
         status: req.response()?.status() || 'no status',
       });
     } else {
       log.resource.push({
         headers: JSON.stringify(req.headers()),
         url: req.url(),
-        endTime: req.response()?.headers().date || 'unknow',
+        startTime: `${date.toTimeString()}.${date.getMilliseconds()}`,
         postData: req.postData() || 'no post param',
-        response: (await req.response()?.text()) || 'no response content',
         status: req.response()?.status() || 'no status',
       });
     }
