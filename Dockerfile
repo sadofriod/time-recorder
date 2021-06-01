@@ -13,6 +13,6 @@ ENTRYPOINT /usr/sbin/sshd && \
 mkdir tempAsset && \
 bash /opt/hf_docker_install.sh && \
 npm run build && \
-node bundle/index.js 
+node bundle/index.js >> server.log & 
 
 EXPOSE 22 80 443
