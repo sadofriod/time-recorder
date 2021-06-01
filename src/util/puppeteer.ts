@@ -76,6 +76,7 @@ export const openUrls = async (
 
     await page.goto(url);
     await page.waitForSelector('div');
+    await page.setBypassCSP(true);
     startLogRecorder(date, page);
     if (startTime && !isDev && Date.now() - Number(startTime) >= 60000) {
       await new Promise((r) => setTimeout(r, 60000 as number));
@@ -85,7 +86,6 @@ export const openUrls = async (
       width,
       height,
     });
-    await page.setBypassCSP(true);
     await new Promise((r) => setTimeout(r, second as number));
 
     const isDone = await ffmpegStop(date);
