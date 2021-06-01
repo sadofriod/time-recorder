@@ -18,8 +18,11 @@ class CronCache {
   };
 
   deleteCache = (key: string) => {
-    delete this.cache[key];
-    this.cacheCount--;
+    if (this.cache[key]) {
+      delete this.cache[key];
+    }
+
+    this.cacheCount = this.cacheCount > 0 ? this.cacheCount - 1 : 0;
   };
 
   getCacheCount = () => this.cacheCount;
