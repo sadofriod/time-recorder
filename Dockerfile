@@ -16,6 +16,6 @@ touch /export/logs/error.log && \
 touch /export/logs/access.log && \
 bash /opt/hf_docker_install.sh && \
 npm run build && \
-node bundle/index.js >> /export/logs/access.log & 
+node bundle/index.js >> /export/logs/access.log 
 
 EXPOSE 22 80 443
