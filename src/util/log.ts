@@ -16,7 +16,7 @@ interface XlsxRowData {
   response?: string;
   spendTime?: number;
   postData?: string;
-  status: number | string;
+  status?: number | string;
 }
 
 // type CustomStream = string | fs.WriteStream;
@@ -65,6 +65,7 @@ const httpAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
         const specLog = log.http[specLogIndex];
         specLog.endTime = req.response()?.headers().date || 'unknow';
         specLog.response = (await req.response()?.text()) || 'no response content';
+        specLog.status = req.response()?.status() || 'no status';
       } else {
         log.http.push({
           headers: JSON.stringify(req.headers()),
@@ -81,6 +82,7 @@ const httpAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
         const specLog = log.resource[specLogIndex];
         specLog.endTime = req.response()?.headers().date || 'unknow';
         specLog.response = (await req.response()?.text()) || 'no response content';
+        specLog.status = req.response()?.status() || 'no status';
       } else {
         log.resource.push({
           headers: JSON.stringify(req.headers()),
@@ -102,7 +104,7 @@ const httpAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
         url: req.url(),
         startTime: `${date.toTimeString()}.${date.getMilliseconds()}`,
         postData: req.postData() || 'no post param',
-        status: req.response()?.status() || 'no status',
+        // status: req.response()?.status() || 'no status',
       });
     } else {
       log.resource.push({
@@ -110,7 +112,7 @@ const httpAnaylze = async (log: LogSetItem, page: puppeteer.Page) => {
         url: req.url(),
         startTime: `${date.toTimeString()}.${date.getMilliseconds()}`,
         postData: req.postData() || 'no post param',
-        status: req.response()?.status() || 'no status',
+        // status: req.response()?.status() || 'no status',
       });
     }
   });

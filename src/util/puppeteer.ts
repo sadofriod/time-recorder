@@ -77,9 +77,9 @@ export const openUrls = async (
     await page.goto(url);
     await page.waitForSelector('div');
     startLogRecorder(date, page);
-    if (startTime && !isDev && Date.now() - Number(startTime) >= 50000) {
-      await new Promise((r) => setTimeout(r, 60000 as number));
-    }
+    // if (startTime && !isDev && Date.now() - Number(startTime) >= 50000) {
+    await new Promise((r) => setTimeout(r, 60000 as number));
+    // }
     await updateTask({ id: task.getTask(date).id, status: 1 }, cookieString);
     startRecorder(date, display, {
       width,
