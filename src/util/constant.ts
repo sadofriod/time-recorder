@@ -5,10 +5,6 @@
 
 export const isDev = process.env.NODE_ENV === 'development';
 
-export const baseRPCUrl = 'https://test-jdvison.jd.com';
-
-export const downloadBase = 'http://test.listener.jd.com';
-
 export const UPLOAD_FILE = '/monitor/task/upload';
 
 export const CREATE_TASK = '/monitor/task/add';
@@ -23,14 +19,6 @@ export const COMMAND = '';
 
 // export const BASE_PATH = '/app/tempAsset/';
 export const BASE_PATH = isDev ? '/app/tempAsset/' : '/home/admin/app/tempAsset/';
-
-///home/admin/obj-storage 对象存储
-// export const BASE_PATH = isDev ? '/app/tempAsset/' : '/home/admin/obj-storage/';
-
-// export const BASE_PATH = '/media/psf/Home/Desktop/back-end/jdvlistener/tempAsset/';
-
-// export const BASE_PATH = '/Users/dushihua2/Desktop/back-and/jdvlistener/tempAsset';
-// export const BASE_PATH = 'D:/back-end/jdvlistener/tempAsset';
 
 export const JS_ERROR_LOG_PATH = (date: number | string) => `${BASE_PATH}/${date}/js_error.log`;
 
