@@ -5,7 +5,6 @@ import { CronJob } from 'cron';
 import { timeConvert } from '../util/timeConvert';
 // import * as uuid from 'uuid';
 import { isDev } from '../util/constant';
-import { createTask } from '../rpc/api';
 import task from '../util/task';
 import cronCache from '../util/cron';
 import uuid from 'uuid';
