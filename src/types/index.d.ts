@@ -11,12 +11,8 @@ interface OpenWindowOption {
 }
 
 interface ImageOption {
-  type: 'png' | 'jpeg';
   url: string;
-  extname: string;
-  quality: number;
   size: { width: number; height: number };
-  offset?: { x: number; y: number };
   key: string;
   videoUrl: string;
   logUrl: string;

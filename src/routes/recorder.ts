@@ -8,6 +8,7 @@ import { isDev } from '../util/constant';
 import { createTask } from '../rpc/api';
 import task from '../util/task';
 import cronCache from '../util/cron';
+import uuid from 'uuid';
 
 const router = Router();
 // const tempSourceMap: any = {};
@@ -39,16 +40,7 @@ export default router.post<any, any, ImageOption>('/recorder', async (req, res) 
     cronCache.setCache(key, job);
     job.start();
     try {
-      const result = await createTask({
-        key: key,
-        body: {
-          ...body,
-        },
-        cookie: headers.cookie,
-      });
-      if (result && result.id !== undefined) {
-        task.setTask(key, { id: result.id });
-      }
+      task.setTask(key, { id: uuid.v4() });
       res.json({
         code: 200,
         message: 'SUCCESS',

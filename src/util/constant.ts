@@ -8,7 +8,6 @@ export const isDev = process.env.NODE_ENV === 'development';
 export const baseRPCUrl = 'https://test-jdvison.jd.com';
 
 export const downloadBase = 'http://test.listener.jd.com';
-// export const baseRPCUrl = !isDev ? 'http://ssjdv.jd.com' : 'http://test.listen.jd.com';
 
 export const UPLOAD_FILE = '/monitor/task/upload';
 

@@ -6,8 +6,6 @@ import { xvfbStart, xvfbStop } from './xvfb';
 import * as fs from 'fs';
 import { startRecorder, ffmpegStop } from './ffmpeg';
 import { startLogRecorder, stopLogRecorder } from './log';
-import task from '../util/task';
-import { updateTask } from '../rpc/api';
 
 const converntCookie = (cookie: any) => {
   const keys = Object.keys(cookie);
@@ -81,7 +79,6 @@ export const openUrls = async (
     if (startTime && !isDev && Date.now() - Number(startTime) >= 60000) {
       await new Promise((r) => setTimeout(r, 60000 as number));
     }
-    await updateTask({ id: task.getTask(date).id, status: 1 }, cookieString);
     startRecorder(date, display, {
       width,
       height,
@@ -93,19 +90,7 @@ export const openUrls = async (
     if (!isDone) {
       throw '录制未完成';
     }
-    // const video: any = await fileUpload(task.getTask(date).id, true, cookieString);
-    // const log: any = await fileUpload(date, task.getTask(date).id, false, cookieString);
-    // console.log(video);
 
-    await updateTask(
-      {
-        id: task.getTask(date).id,
-        status: 9,
-        // videoUrl: `${date}/screen.webm`,
-        // logUrl: `${date}/network_access.log`,
-      },
-      cookieString
-    );
     await new Promise((r) => setTimeout(r, 3000 as number));
     await browser.close();
     await xvfbStop(date);
@@ -120,7 +105,7 @@ export const openUrls = async (
       console.log(`${date} is deleted!`);
     });
     await xvfbStop(date);
-    await updateTask({ id: task.getTask(date).id, status: -1 }, cookieString);
+    // await updateTask({ id: task.getTask(date).id, status: -1 }, cookieString);
     job.stop();
   }
 };
