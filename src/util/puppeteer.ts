@@ -11,11 +11,7 @@ const converntCookie = (cookie: any) => {
   const keys = Object.keys(cookie);
   const result: puppeteer.SetCookie[] = [];
   keys.forEach((item) => {
-    result.push({ name: item, value: cookie[item], url: 'http://.jd.com' });
-
-    if (item === 'rememberMe') {
-      result.push({ name: item, value: cookie[item], url: 'http://ssjdv.jd.com' });
-    }
+    result.push({ name: item, value: cookie[item] });
   });
   return result;
 };
