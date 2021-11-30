@@ -39,7 +39,7 @@ export const openUrls = async (
 
     const browser = await puppeteer.launch({
       headless: false,
-      executablePath: '/usr/bin/google-chrome',
+      // executablePath: '/usr/bin/google-chrome',
       defaultViewport: null,
       args: [
         '--enable-usermedia-screen-capturing',
