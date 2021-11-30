@@ -31,9 +31,9 @@ app.use(searchCornCount);
 app.use(_delete);
 app.use(express.static(`${BASE_PATH}`));
 // app.use('/server_log',express.static(`/app`));
-app.get('/server_log',(req,res)=>{
+app.get('/server_log', (req, res) => {
   res.sendFile(`/home/admin/app/server.log`);
-})
-app.listen(isDev ? 8080 : 80, '0.0.0.0', function () {
-  console.log(`server start on ${isDev ? 8080 : 80}`);
+});
+app.listen(80, '0.0.0.0', function () {
+  console.log(`server start on ${80}`);
 });

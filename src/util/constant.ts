@@ -5,20 +5,9 @@
 
 export const isDev = process.env.NODE_ENV === 'development';
 
-export const UPLOAD_FILE = '/monitor/task/upload';
-
-export const CREATE_TASK = '/monitor/task/add';
-
-export const UPDATE_TASK = '/monitor/task/update';
-
-export const GET_TASKS = '/monitor/task/list';
-
 export const COMMAND = '';
 
-// export const IMAGE_TEMP_DIR = '/Users/ashes/Desktop/back-end/jdv-listener/tempAsset/';
-
-// export const BASE_PATH = '/app/tempAsset/';
-export const BASE_PATH = isDev ? '/app/tempAsset/' : '/home/admin/app/tempAsset/';
+export const BASE_PATH = '/home/admin/app/tempAsset/';
 
 export const JS_ERROR_LOG_PATH = (date: number | string) => `${BASE_PATH}/${date}/js_error.log`;
 

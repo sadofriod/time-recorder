@@ -8,7 +8,6 @@ RUN apt-get -qqy update && \
 
 #
 # BASE PACKAGES
-# docker run --name listener-test -v D:\back-end\jdvlistene:/app -p 8080:8080 -it jdvlistener bash
 RUN apt-get -qqy --no-install-recommends install \
   bzip2 \
   ca-certificates \
@@ -44,26 +43,12 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
   rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
   ln -s /usr/bin/google-chrome /usr/bin/chromium-browser
 
-RUN npm install pm2 -g
-
-# Using in product
-# ADD ./bundle/ /app/
-# ENTRYPOINT npm run build && npm run start-pro
-
-# Using in dev
-WORKDIR /app
-# ENTRYPOINT npm run start
-# Using in dev
-ADD ./ /home/admin/app
 WORKDIR /home/admin/app
+RUN git clone https://github.com/sadofriod/time-recorder.git ./
 RUN npm install
 ENTRYPOINT /usr/sbin/sshd && \
   mkdir tempAsset && \
-  mkdir -p /export/logs && \
-  touch /export/logs/error.log && \
-  touch /export/logs/access.log && \
-  bash /opt/hf_docker_install.sh && \
   npm run build && \
-  node bundle/index.js >> /export/logs/access.log 
+  node /home/admin/app/bundle/index.js >> /home/admin/app/server.log 
 
 EXPOSE 22 80 443

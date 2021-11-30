@@ -4,12 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": " cross-env cross-env NODE_ENV=development nodemon --watch 'src/**/*.ts' --exec bash ./shell/dev-start.sh ",
-    "win:dev": "cross-env cross-env NODE_ENV=development nodemon --watch 'src/**/*.ts' --exec  'rm -rf tempAsset/* tsc && node bundle/index.js'",
-    "build": "cross-env NODE_ENV=production tsc",
-    "build:dev": "cross-env NODE_ENV=development tsc",
-    "watch:build": "tsc-watch --onSuccess 'nodemon --ignore tempAsset ./bundle/index.js' ",
-    "watch:server": "nodemon './bundle/index.js' --watch './bundle"
+    "dev": "nodemon",
+    "build": "cross-env NODE_ENV=production tsc"
   },
   "author": "",
   "license": "ISC",
@@ -27,8 +23,7 @@
     "request": "^2.88.2",
     "typescript": "^4.1.3",
     "uuid": "^8.3.2",
-    "xlsx": "^0.16.9",
-    "xvfb": "^0.4.0"
+    "xlsx": "^0.16.9"
   },
   "devDependencies": {
     "@types/cron": "^1.7.2",

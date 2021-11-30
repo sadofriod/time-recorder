@@ -1,6 +1,4 @@
 import * as process from 'child_process';
-// import * as util from 'util';
-
 class XvfbMap {
   private xvfb: {
     [key: string]: {
@@ -67,12 +65,9 @@ export const xvfbStart = async (
   option: { width: number; height: number; depth: 15 | 16 | 24 },
   execPath?: string
 ) => {
-  // const randomNum = await getRunnableNumber(execPath);
-  // const randomNum = 10086;
   const randomNum = Math.floor(62396 * Math.random());
   const { width, height, depth } = option;
   try {
-    // process.spawn('export', [`DISPLAY=:${randomNum}`]);
     const xvfb = process.spawn('Xvfb', [
       `:${randomNum}`,
       '-screen',
@@ -81,14 +76,7 @@ export const xvfbStart = async (
       '-ac',
       '-noreset',
     ]);
-    // const { stdout, stderr } = xvfb
-    // console.log("trigger");
-    // await util.promisify(stderr.on)('close')
-    // if (error) {
-    //   console.log(error);
 
-    //   return;
-    // }
     xvfbIns.setXvfb(key, randomNum, xvfb, execPath);
     return randomNum;
   } catch (error) {

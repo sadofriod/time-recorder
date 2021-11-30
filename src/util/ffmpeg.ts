@@ -1,9 +1,5 @@
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
-// import { fileUpload } from '../rpc/api';
 import { BASE_PATH } from './constant';
-
-// import * as util from 'util';
-
 class FFmpeg {
   private ffmpeg: {
     [key: string]: ChildProcessWithoutNullStreams;
@@ -21,43 +17,6 @@ class FFmpeg {
 }
 
 const ffmpegIns = new FFmpeg();
-
-export const startCapture = async (
-  key: string,
-  display: number,
-  option: { width: number; height: number; framerate: number },
-  extname = 0
-): Promise<any> => {
-  const { width, height, framerate } = option;
-
-  if (extname < framerate) {
-    const ffmpeg = spawn('ffmpeg', [
-      '-f',
-      'x11grab',
-      // '-r',
-      // '25',
-      '-framerate',
-      '24',
-      '-s',
-      `${width}x${height}`,
-      '-i',
-      ':' + display,
-      '-c:v',
-      'libvpx',
-      '-quality',
-      'realtime',
-      '-cpu-used',
-      '0',
-      // 'out_' + extname + '.mepeg',
-      `${BASE_PATH}${key}/out_${extname}.mpeg`,
-    ]);
-    ffmpeg.stderr.on('data', (data) => console.log(data.toString()));
-    // await new Promise((res) => setTimeout(res, Math.floor(1000 / framerate)));
-    ffmpegIns.setFFmpeg(key, ffmpeg);
-  } else {
-    return 'done';
-  }
-};
 
 export const startRecorder = async (key: string, display: number, option: { width: number; height: number }) => {
   const { width, height } = option;
