@@ -20,13 +20,7 @@ interface Options extends Omit<ImageOption, 'url'> {
   url: string;
 }
 
-export const openUrls = async (
-  options: Options,
-  cookies: puppeteer.SetCookie,
-  cookieString: string | undefined,
-  job: CronJob,
-  date: string
-) => {
+export const openUrls = async (options: Options, cookies: puppeteer.SetCookie, job: CronJob, date: string) => {
   const { size, url, second, startTime } = options;
   const { width, height } = size;
   fs.mkdirSync(`${BASE_PATH}${date}`);
@@ -62,7 +56,7 @@ export const openUrls = async (
     });
     const page = await browser.newPage();
     await page.setDefaultNavigationTimeout(0);
-    await page.setCookie(...converntCookie(cookies));
+    cookies && (await page.setCookie(...converntCookie(cookies)));
     await page.setViewport({
       width: width,
       height: height,
